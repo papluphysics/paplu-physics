@@ -69,7 +69,7 @@ export default function DashboardPage() {
         .select('id, amount_paid, purchase_date, expiry_date, papers(id, title_en, title_gu, paper_count)')
         .order('purchase_date', { ascending: false })
         .then(({ data }) => {
-          setPurchases((data as Purchase[]) || [])
+          setPurchases((data as unknown as Purchase[]) || [])
           setDataLoading(false)
         })
     }
