@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowRight, Star, Shield, Clock, Users, TrendingUp, ChevronDown } from 'lucide-react'
 import Navbar from '@/components/Navbar'
@@ -8,6 +9,7 @@ import Footer from '@/components/Footer'
 import PaperCard from '@/components/PaperCard'
 import { useLang } from '@/context/LangContext'
 import { PAPERS } from '@/lib/papers'
+import { supabase } from '@/lib/supabase'
 
 const FAQS = [
   {
@@ -57,6 +59,7 @@ const FEATURES = [
 
 export default function HomePage() {
   const { t, lang } = useLang()
+  const router = useRouter()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [stats, setStats] = useState({ students: 0, papers: 0 })
   const trending = PAPERS.filter(p => p.popular)
@@ -64,6 +67,15 @@ export default function HomePage() {
   useEffect(() => {
     fetch('/api/stats').then(r => r.json()).then(d => setStats(d)).catch(() => {})
   }, [])
+
+  // Handle Google OAuth hash-based redirect (when Supabase redirects here instead of /auth/callback)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash.includes('access_token=')) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) router.replace('/dashboard')
+      })
+    }
+  }, [router])
 
   const gu = lang === 'gu'
 

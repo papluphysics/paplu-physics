@@ -1,44 +1,76 @@
 'use client'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { Zap, ArrowLeft, Mail, CheckCircle } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Zap, ArrowLeft, Mail } from 'lucide-react'
 import { useLang } from '@/context/LangContext'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 
-type Step = 'choose' | 'email' | 'sent'
+type Step = 'choose' | 'email' | 'otp'
 
 function LoginInner() {
   const { t, lang } = useLang()
   const gu = lang === 'gu'
+  const router = useRouter()
   const searchParams = useSearchParams()
   const [step, setStep] = useState<Step>('choose')
   const [email, setEmail] = useState('')
+  const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [verifying, setVerifying] = useState(false)
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
     const err = searchParams.get('error')
     if (err) toast.error(decodeURIComponent(err))
   }, [searchParams])
 
-  const sendLink = async () => {
+  const sendOtp = async () => {
     if (!email.trim() || !email.includes('@')) {
       toast.error(gu ? 'માન્ય ઇમેઇલ દાખલ કરો' : 'Enter a valid email address')
       return
     }
     setLoading(true)
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: window.location.origin + '/auth/callback' },
-    })
+    const { error } = await supabase.auth.signInWithOtp({ email: email.trim() })
     setLoading(false)
+    if (error) { toast.error(error.message); return }
+    setOtp(['', '', '', '', '', ''])
+    setStep('otp')
+    setTimeout(() => otpRefs.current[0]?.focus(), 100)
+  }
+
+  const doVerify = async (code: string) => {
+    setVerifying(true)
+    const { error } = await supabase.auth.verifyOtp({
+      email: email.trim(),
+      token: code,
+      type: 'email',
+    })
+    setVerifying(false)
     if (error) {
-      toast.error(error.message)
-      return
+      toast.error(gu ? 'ખોટો કોડ. ફરી પ્રયાસ કરો.' : 'Wrong code. Try again.')
+      setOtp(['', '', '', '', '', ''])
+      otpRefs.current[0]?.focus()
+    } else {
+      router.replace('/dashboard')
     }
-    setStep('sent')
+  }
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return
+    const next = [...otp]
+    next[index] = value.slice(-1)
+    setOtp(next)
+    if (value && index < 5) otpRefs.current[index + 1]?.focus()
+    if (next.join('').length === 6) setTimeout(() => doVerify(next.join('')), 100)
+  }
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus()
+    }
   }
 
   const handleGoogleLogin = async () => {
@@ -50,16 +82,11 @@ function LoginInner() {
         queryParams: { access_type: 'offline', prompt: 'consent' },
       },
     })
-    if (error) {
-      toast.error(error.message)
-      setGoogleLoading(false)
-    }
-    // If no error, browser redirects — no need to reset loading
+    if (error) { toast.error(error.message); setGoogleLoading(false) }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-50 to-white flex flex-col">
-      {/* Mini nav */}
       <header className="px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-1.5">
           <div className="w-7 h-7 bg-brand-500 rounded-lg flex items-center justify-center">
@@ -76,7 +103,6 @@ function LoginInner() {
         <div className="w-full max-w-sm">
           <div className="bg-white rounded-3xl border border-gray-100 shadow-lg p-8">
 
-            {/* Choose method */}
             {step === 'choose' && (
               <>
                 <div className="text-center mb-8">
@@ -91,7 +117,6 @@ function LoginInner() {
                   </p>
                 </div>
 
-                {/* Google login */}
                 <button
                   onClick={handleGoogleLogin}
                   disabled={googleLoading}
@@ -108,9 +133,7 @@ function LoginInner() {
                     </svg>
                   )}
                   <span className={gu ? 'font-gujarati' : ''}>
-                    {googleLoading
-                      ? (gu ? 'રીડાયરેક્ટ કરી રહ્યા...' : 'Redirecting...')
-                      : t.googleLogin}
+                    {googleLoading ? (gu ? 'રીડાયરેક્ટ...' : 'Redirecting...') : t.googleLogin}
                   </span>
                 </button>
 
@@ -120,24 +143,20 @@ function LoginInner() {
                   <div className="flex-1 h-px bg-gray-100" />
                 </div>
 
-                {/* Email login */}
                 <button
                   onClick={() => setStep('email')}
                   className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-brand-500 rounded-2xl font-semibold text-white hover:bg-brand-600 transition-all text-sm"
                 >
                   <Mail size={16} />
-                  <span className={gu ? 'font-gujarati' : ''}>{gu ? 'ઇમેઇલ દ્વારા લૉગિન' : 'Login with Email'}</span>
+                  <span className={gu ? 'font-gujarati' : ''}>{gu ? 'ઇમેઇલ OTP દ્વારા લૉગિન' : 'Login with Email OTP'}</span>
                 </button>
 
                 <p className={`text-center text-xs text-gray-400 mt-5 leading-relaxed ${gu ? 'font-gujarati' : ''}`}>
-                  {gu
-                    ? 'લૉગિન કરીને તમે અમારી સેવાની શરતો સ્વીકારો છો'
-                    : 'By logging in you agree to our Terms of Use & Privacy Policy'}
+                  {gu ? 'લૉગિન કરીને તમે અમારી સેવાની શરતો સ્વીકારો છો' : 'By logging in you agree to our Terms of Use & Privacy Policy'}
                 </p>
               </>
             )}
 
-            {/* Email entry */}
             {step === 'email' && (
               <>
                 <button onClick={() => setStep('choose')} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-6">
@@ -151,7 +170,7 @@ function LoginInner() {
                     {gu ? 'ઇમેઇલ સરનામું' : 'Email Address'}
                   </h2>
                   <p className={`text-sm text-gray-500 ${gu ? 'font-gujarati' : ''}`}>
-                    {gu ? 'અમે તમારા ઇમેઇલ પર એક લૉગિન લિંક મોકલીશું' : "We'll send a secure login link to your email"}
+                    {gu ? 'અમે 6 અંકનો OTP કોડ મોકલીશું' : "We'll send a 6-digit OTP to your email"}
                   </p>
                 </div>
                 <input
@@ -160,55 +179,67 @@ function LoginInner() {
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className="w-full px-4 py-3 rounded-2xl border-2 border-gray-200 text-sm outline-none focus:border-brand-400 transition-colors mb-4"
-                  onKeyDown={e => e.key === 'Enter' && sendLink()}
+                  onKeyDown={e => e.key === 'Enter' && sendOtp()}
                   autoFocus
                 />
                 <button
-                  onClick={sendLink}
+                  onClick={sendOtp}
                   disabled={loading}
                   className="w-full btn-primary py-3 rounded-2xl text-sm disabled:opacity-60"
                 >
-                  {loading
-                    ? (gu ? 'મોકલી રહ્યા...' : 'Sending...')
-                    : (gu ? 'લૉગિન લિંક મોકલો' : 'Send Login Link')}
+                  {loading ? (gu ? 'OTP મોકલી રહ્યા...' : 'Sending OTP...') : (gu ? 'OTP મોકલો' : 'Send OTP')}
                 </button>
               </>
             )}
 
-            {/* Link sent confirmation */}
-            {step === 'sent' && (
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle size={32} className="text-green-500" />
-                </div>
-                <h2 className={`font-display font-bold text-xl text-gray-900 mb-2 ${gu ? 'font-gujarati' : ''}`}>
-                  {gu ? 'ઇમેઇલ ચેક કરો!' : 'Check your email!'}
-                </h2>
-                <p className={`text-sm text-gray-500 mb-1 ${gu ? 'font-gujarati' : ''}`}>
-                  {gu ? 'લૉગિન લિંક મોકલ્યો:' : 'Login link sent to:'}
-                </p>
-                <p className="text-sm font-semibold text-brand-600 mb-6 break-all">{email}</p>
-                <p className={`text-xs text-gray-400 mb-6 leading-relaxed ${gu ? 'font-gujarati' : ''}`}>
-                  {gu
-                    ? 'ઇમેઇલ ખોલો અને "Sign In" બટન પર ક્લિક કરો. ૧૦ મિનિટ માટે માન્ય.'
-                    : 'Open the email and click "Sign In". The link expires in 10 minutes.'}
-                </p>
-                <button
-                  onClick={sendLink}
-                  disabled={loading}
-                  className="text-sm text-brand-500 hover:underline disabled:opacity-50"
-                >
-                  {gu ? 'ફરી મોકલો' : 'Resend link'}
+            {step === 'otp' && (
+              <>
+                <button onClick={() => setStep('email')} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-6">
+                  <ArrowLeft size={14} /> Back
                 </button>
-                <div className="mt-4">
-                  <button
-                    onClick={() => setStep('email')}
-                    className="text-xs text-gray-400 hover:text-gray-600"
-                  >
-                    {gu ? 'ઇમેઇલ બદલો' : 'Use a different email'}
-                  </button>
+                <div className="text-center mb-6">
+                  <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <Mail size={20} className="text-green-500" />
+                  </div>
+                  <h2 className={`font-display font-bold text-xl text-gray-900 mb-1 ${gu ? 'font-gujarati' : ''}`}>
+                    {gu ? 'OTP દાખલ કરો' : 'Enter OTP'}
+                  </h2>
+                  <p className={`text-sm text-gray-500 ${gu ? 'font-gujarati' : ''}`}>
+                    {gu ? `${email} પર 6 અંકનો કોડ મોકલ્યો` : `6-digit code sent to ${email}`}
+                  </p>
                 </div>
-              </div>
+
+                <div className="flex gap-2 justify-center mb-6">
+                  {otp.map((digit, i) => (
+                    <input
+                      key={i}
+                      ref={el => { otpRefs.current[i] = el }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={e => handleOtpChange(i, e.target.value)}
+                      onKeyDown={e => handleOtpKeyDown(i, e)}
+                      disabled={verifying}
+                      className="w-11 h-12 text-center text-xl font-bold border-2 border-gray-200 rounded-xl outline-none focus:border-brand-400 transition-colors disabled:opacity-50"
+                    />
+                  ))}
+                </div>
+
+                {verifying && (
+                  <div className="flex justify-center mb-4">
+                    <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+
+                <button
+                  onClick={sendOtp}
+                  disabled={loading || verifying}
+                  className="w-full text-sm text-brand-500 hover:underline disabled:opacity-50 mt-2"
+                >
+                  {loading ? (gu ? 'મોકલી રહ્યા...' : 'Sending...') : (gu ? 'ફરી OTP મોકલો' : 'Resend OTP')}
+                </button>
+              </>
             )}
           </div>
         </div>
