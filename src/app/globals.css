@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-dm-sans: 'DM Sans', sans-serif;
+  --font-syne: 'Syne', sans-serif;
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  
+  body {
+    font-family: var(--font-dm-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-syne);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .font-gujarati {
+    font-family: 'Noto Sans Gujarati', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-brand-600 transition-all duration-200 text-sm shadow-sm hover:shadow-md active:scale-95;
+  }
+  
+  .btn-outline {
+    @apply border border-gray-200 text-gray-700 font-medium px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 text-sm active:scale-95;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border;
+  }
+
+  .section-title {
+    @apply text-2xl font-display font-bold text-gray-900 tracking-tight;
+  }
+
+  .section-label {
+    @apply text-xs font-bold uppercase tracking-widest text-brand-500 mb-1;
+  }
+}
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* Animated underline for nav links */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #1264F0;
+  transition: width 0.2s ease;
+  border-radius: 2px;
+}
+.nav-link:hover::after,
+.nav-link.active::after { width: 100%; }
