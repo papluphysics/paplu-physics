@@ -75,42 +75,30 @@ export async function POST(req: NextRequest) {
 
     // 5. Deduct wallet balance if used
     if (intent.wallet_deduction > 0) {
-      await db.rpc('decrement_wallet', {
-        user_id: user.id,
-        amount: intent.wallet_deduction,
-      }).catch(() => {
-        // If RPC doesn't exist, do a manual update
-        return db
-          .from('users')
-          .select('wallet_balance')
-          .eq('id', user.id)
-          .single()
-          .then(({ data }) => {
-            const current = data?.wallet_balance ?? 0
-            const newBalance = Math.max(0, current - intent.wallet_deduction)
-            return db.from('users').update({ wallet_balance: newBalance }).eq('id', user.id)
-          })
-      })
+      try {
+        const { error: rpcErr } = await db.rpc('decrement_wallet', {
+          user_id: user.id,
+          amount: intent.wallet_deduction,
+        })
+        if (rpcErr) throw rpcErr
+      } catch {
+        const { data: ud } = await db.from('users').select('wallet_balance').eq('id', user.id).single()
+        const newBalance = Math.max(0, (ud?.wallet_balance ?? 0) - intent.wallet_deduction)
+        await db.from('users').update({ wallet_balance: newBalance }).eq('id', user.id)
+      }
     }
 
     // 6. Increment coupon use_count if a coupon was applied
     if (intent.coupon_code) {
-      await db.rpc('increment_coupon_use', { coupon_code: intent.coupon_code })
-        .catch(() => {
-          // Fallback manual increment
-          return db
-            .from('coupons')
-            .select('use_count')
-            .eq('code', intent.coupon_code)
-            .single()
-            .then(({ data }) => {
-              if (data) {
-                return db.from('coupons')
-                  .update({ use_count: (data.use_count || 0) + 1 })
-                  .eq('code', intent.coupon_code)
-              }
-            })
-        })
+      try {
+        const { error: rpcErr } = await db.rpc('increment_coupon_use', { coupon_code: intent.coupon_code })
+        if (rpcErr) throw rpcErr
+      } catch {
+        const { data: cd } = await db.from('coupons').select('use_count').eq('code', intent.coupon_code).single()
+        if (cd) {
+          await db.from('coupons').update({ use_count: (cd.use_count || 0) + 1 }).eq('code', intent.coupon_code)
+        }
+      }
     }
 
     // 7. Credit referral commission and record referral
