@@ -43,38 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const meta = authUser.user_metadata ?? {}
     const nameFromAuth = meta.full_name || meta.name || null
     const emailFromAuth = authUser.email ?? null
-
-    // Try to fetch existing profile
-    const { data: existing } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', authUser.id)
-      .maybeSingle()
-
-    if (existing) {
-      // Patch any missing fields (name from Google, email, referral_code)
-      const patch: Record<string, string> = {}
-      if (!existing.name && nameFromAuth) patch.name = nameFromAuth
-      if (!existing.email && emailFromAuth) patch.email = emailFromAuth
-      if (!existing.referral_code) patch.referral_code = makeReferralCode(authUser.id)
-
-      if (Object.keys(patch).length > 0) {
-        const { data: patched } = await supabase
-          .from('users')
-          .update(patch)
-          .eq('id', authUser.id)
-          .select()
-          .maybeSingle()
-        setProfile((patched ?? { ...existing, ...patch }) as UserProfile)
-      } else {
-        setProfile(existing as UserProfile)
-      }
-      return
-    }
-
-    // First login — insert new profile row
     const referralCode = makeReferralCode(authUser.id)
-    const { data: created, error } = await supabase
+
+    // Step 1: Try to insert a new row (fails silently if already exists)
+    const { data: inserted } = await supabase
       .from('users')
       .insert({
         id: authUser.id,
@@ -86,16 +58,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .select()
       .maybeSingle()
 
-    if (created) {
-      setProfile(created as UserProfile)
-    } else if (error?.code === '23505') {
-      // Race condition: another call already inserted — fetch existing
-      const { data: fallback } = await supabase
+    if (inserted) {
+      setProfile(inserted as UserProfile)
+      return
+    }
+
+    // Step 2: Row already exists (or insert failed) — fetch existing
+    const { data: existing } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', authUser.id)
+      .maybeSingle()
+
+    if (!existing) return // RLS blocking — SQL fix needed
+
+    // Step 3: Patch any null fields (name from Google OAuth, referral_code)
+    const patch: Record<string, string> = {}
+    if (!existing.name && nameFromAuth) patch.name = nameFromAuth
+    if (!existing.email && emailFromAuth) patch.email = emailFromAuth
+    if (!existing.referral_code) patch.referral_code = referralCode
+
+    if (Object.keys(patch).length > 0) {
+      const { data: patched } = await supabase
         .from('users')
-        .select('*')
+        .update(patch)
         .eq('id', authUser.id)
+        .select()
         .maybeSingle()
-      if (fallback) setProfile(fallback as UserProfile)
+      setProfile((patched ?? { ...existing, ...patch }) as UserProfile)
+    } else {
+      setProfile(existing as UserProfile)
     }
   }
 
