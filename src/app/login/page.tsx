@@ -1,8 +1,8 @@
 'use client'
-import { useState, useEffect, useRef, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Zap, ArrowLeft, Mail } from 'lucide-react'
+import { Zap, ArrowLeft, Mail, KeyRound } from 'lucide-react'
 import { useLang } from '@/context/LangContext'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -16,11 +16,10 @@ function LoginInner() {
   const searchParams = useSearchParams()
   const [step, setStep] = useState<Step>('choose')
   const [email, setEmail] = useState('')
-  const [otp, setOtp] = useState(['', '', '', '', '', ''])
+  const [otpValue, setOtpValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [verifying, setVerifying] = useState(false)
-  const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
     const err = searchParams.get('error')
@@ -36,12 +35,16 @@ function LoginInner() {
     const { error } = await supabase.auth.signInWithOtp({ email: email.trim() })
     setLoading(false)
     if (error) { toast.error(error.message); return }
-    setOtp(['', '', '', '', '', ''])
+    setOtpValue('')
     setStep('otp')
-    setTimeout(() => otpRefs.current[0]?.focus(), 100)
   }
 
-  const doVerify = async (code: string) => {
+  const doVerify = async () => {
+    const code = otpValue.trim()
+    if (code.length < 6) {
+      toast.error(gu ? 'OTP કોડ દાખલ કરો' : 'Enter the OTP code')
+      return
+    }
     setVerifying(true)
     const { error } = await supabase.auth.verifyOtp({
       email: email.trim(),
@@ -51,25 +54,9 @@ function LoginInner() {
     setVerifying(false)
     if (error) {
       toast.error(gu ? 'ખોટો કોડ. ફરી પ્રયાસ કરો.' : 'Wrong code. Try again.')
-      setOtp(['', '', '', '', '', ''])
-      otpRefs.current[0]?.focus()
+      setOtpValue('')
     } else {
       router.replace('/dashboard')
-    }
-  }
-
-  const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return
-    const next = [...otp]
-    next[index] = value.slice(-1)
-    setOtp(next)
-    if (value && index < 5) otpRefs.current[index + 1]?.focus()
-    if (next.join('').length === 6) setTimeout(() => doVerify(next.join('')), 100)
-  }
-
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      otpRefs.current[index - 1]?.focus()
     }
   }
 
@@ -199,43 +186,42 @@ function LoginInner() {
                 </button>
                 <div className="text-center mb-6">
                   <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                    <Mail size={20} className="text-green-500" />
+                    <KeyRound size={20} className="text-green-500" />
                   </div>
                   <h2 className={`font-display font-bold text-xl text-gray-900 mb-1 ${gu ? 'font-gujarati' : ''}`}>
                     {gu ? 'OTP દાખલ કરો' : 'Enter OTP'}
                   </h2>
                   <p className={`text-sm text-gray-500 ${gu ? 'font-gujarati' : ''}`}>
-                    {gu ? `${email} પર 6 અંકનો કોડ મોકલ્યો` : `6-digit code sent to ${email}`}
+                    {gu ? `${email} પર OTP કોડ મોકલ્યો` : `OTP code sent to ${email}`}
                   </p>
                 </div>
 
-                <div className="flex gap-2 justify-center mb-6">
-                  {otp.map((digit, i) => (
-                    <input
-                      key={i}
-                      ref={el => { otpRefs.current[i] = el }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={e => handleOtpChange(i, e.target.value)}
-                      onKeyDown={e => handleOtpKeyDown(i, e)}
-                      disabled={verifying}
-                      className="w-11 h-12 text-center text-xl font-bold border-2 border-gray-200 rounded-xl outline-none focus:border-brand-400 transition-colors disabled:opacity-50"
-                    />
-                  ))}
-                </div>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={otpValue}
+                  onChange={e => setOtpValue(e.target.value.replace(/\D/g, ''))}
+                  onKeyDown={e => e.key === 'Enter' && doVerify()}
+                  placeholder={gu ? 'OTP કોડ અહીં લખો' : 'Paste OTP code here'}
+                  disabled={verifying}
+                  autoFocus
+                  className="w-full text-center text-2xl font-bold tracking-widest px-4 py-4 border-2 border-gray-200 rounded-2xl outline-none focus:border-brand-400 transition-colors mb-4 disabled:opacity-50"
+                />
 
-                {verifying && (
-                  <div className="flex justify-center mb-4">
-                    <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-                  </div>
-                )}
+                <button
+                  onClick={doVerify}
+                  disabled={verifying || otpValue.length < 6}
+                  className="w-full btn-primary py-3 rounded-2xl text-sm disabled:opacity-60 mb-3"
+                >
+                  {verifying
+                    ? (gu ? 'ચકાસી રહ્યા...' : 'Verifying...')
+                    : (gu ? 'OTP ચકાસો' : 'Verify OTP')}
+                </button>
 
                 <button
                   onClick={sendOtp}
                   disabled={loading || verifying}
-                  className="w-full text-sm text-brand-500 hover:underline disabled:opacity-50 mt-2"
+                  className="w-full text-sm text-brand-500 hover:underline disabled:opacity-50"
                 >
                   {loading ? (gu ? 'મોકલી રહ્યા...' : 'Sending...') : (gu ? 'ફરી OTP મોકલો' : 'Resend OTP')}
                 </button>

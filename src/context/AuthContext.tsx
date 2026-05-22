@@ -30,39 +30,73 @@ const AuthContext = createContext<AuthContextType>({
   refreshProfile: async () => {},
 })
 
+function makeReferralCode(userId: string): string {
+  return 'PP' + userId.replace(/-/g, '').slice(0, 6).toUpperCase()
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
   async function fetchOrCreateProfile(authUser: User) {
-    const { data } = await supabase
+    const meta = authUser.user_metadata ?? {}
+    const nameFromAuth = meta.full_name || meta.name || null
+    const emailFromAuth = authUser.email ?? null
+
+    // Try to fetch existing profile
+    const { data: existing } = await supabase
       .from('users')
       .select('*')
       .eq('id', authUser.id)
-      .single()
+      .maybeSingle()
 
-    if (data) {
-      setProfile(data as UserProfile)
+    if (existing) {
+      // Patch any missing fields (name from Google, email, referral_code)
+      const patch: Record<string, string> = {}
+      if (!existing.name && nameFromAuth) patch.name = nameFromAuth
+      if (!existing.email && emailFromAuth) patch.email = emailFromAuth
+      if (!existing.referral_code) patch.referral_code = makeReferralCode(authUser.id)
+
+      if (Object.keys(patch).length > 0) {
+        const { data: patched } = await supabase
+          .from('users')
+          .update(patch)
+          .eq('id', authUser.id)
+          .select()
+          .maybeSingle()
+        setProfile((patched ?? { ...existing, ...patch }) as UserProfile)
+      } else {
+        setProfile(existing as UserProfile)
+      }
       return
     }
 
-    // First login — create profile row in public.users
-    const meta = authUser.user_metadata ?? {}
-    const name = meta.full_name || meta.name || null
-
-    const { data: created } = await supabase
+    // First login — insert new profile row
+    const referralCode = makeReferralCode(authUser.id)
+    const { data: created, error } = await supabase
       .from('users')
       .insert({
         id: authUser.id,
-        name,
+        name: nameFromAuth,
         mobile: authUser.phone ?? null,
-        email: authUser.email ?? null,
+        email: emailFromAuth,
+        referral_code: referralCode,
       })
       .select()
-      .single()
+      .maybeSingle()
 
-    if (created) setProfile(created as UserProfile)
+    if (created) {
+      setProfile(created as UserProfile)
+    } else if (error?.code === '23505') {
+      // Race condition: another call already inserted — fetch existing
+      const { data: fallback } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', authUser.id)
+        .maybeSingle()
+      if (fallback) setProfile(fallback as UserProfile)
+    }
   }
 
   useEffect(() => {
