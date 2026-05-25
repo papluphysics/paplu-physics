@@ -46,6 +46,24 @@
 3. Copy ALL content → Paste into SQL Editor → Click **Run**
 4. You should see "Success" for all tables
 
+### 2.1 — Add Reviews Table (required for Student Reviews feature)
+
+Run this in the Supabase SQL Editor:
+
+```sql
+create table if not exists reviews (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid,
+  user_name text not null,
+  city text,
+  rating integer not null default 5 check (rating >= 1 and rating <= 5),
+  text text not null check (length(text) >= 10 and length(text) <= 500),
+  approved boolean not null default true,
+  created_at timestamptz not null default now()
+);
+create index if not exists reviews_approved_created_idx on reviews (approved, created_at desc);
+```
+
 ---
 
 ## STEP 3 — Generate Admin Password Hash
