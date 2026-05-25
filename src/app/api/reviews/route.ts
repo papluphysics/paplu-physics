@@ -66,7 +66,16 @@ export async function POST(req: NextRequest) {
       approved: true,
     })
 
-    if (error) return NextResponse.json({ error: 'Failed to submit review' }, { status: 500 })
+    if (error) {
+      // Table not created yet — guide the admin
+      if (error.code === '42P01') {
+        return NextResponse.json({
+          error: 'Reviews table not set up. Please run the SQL from DEPLOYMENT.md Step 2.1 in your Supabase dashboard.',
+        }, { status: 503 })
+      }
+      console.error('Review insert error:', error)
+      return NextResponse.json({ error: 'Failed to submit review. Please try again.' }, { status: 500 })
+    }
     return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json({ error: 'Server error' }, { status: 500 })

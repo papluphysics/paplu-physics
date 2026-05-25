@@ -48,6 +48,7 @@
 
 ### 2.1 — Add Reviews Table (required for Student Reviews feature)
 
+
 Run this in the Supabase SQL Editor:
 
 ```sql
@@ -62,6 +63,25 @@ create table if not exists reviews (
   created_at timestamptz not null default now()
 );
 create index if not exists reviews_approved_created_idx on reviews (approved, created_at desc);
+```
+
+### 2.2 — Add Demo Papers Table (required for free demo papers feature)
+
+Run this in the Supabase SQL Editor:
+
+```sql
+create table if not exists demo_papers (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  title_gu text,
+  description text,
+  description_gu text,
+  subject text not null default 'general',
+  class_level text not null default '10',
+  pdf_url text not null,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
 ```
 
 ---

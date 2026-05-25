@@ -8,7 +8,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PaperCard from '@/components/PaperCard'
 import { useLang } from '@/context/LangContext'
-import { PAPERS } from '@/lib/papers'
+import { PAPERS, type Paper } from '@/lib/papers'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 
@@ -129,12 +129,13 @@ export default function HomePage() {
   const router = useRouter()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [stats, setStats] = useState({ students: 0, papers: 0 })
+  const [allPapers, setAllPapers] = useState<Paper[]>(PAPERS) // seed with static data immediately
   const [reviews, setReviews] = useState<Review[] | null>(null)
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState({ name: '', city: '', rating: 5, text: '' })
   const [submitting, setSubmitting] = useState(false)
 
-  const trending = PAPERS.filter(p => p.popular)
+  const trending = allPapers.filter(p => p.popular).slice(0, 3)
   const gu = lang === 'gu'
 
   const animStudents = useCountUp(stats.students, 1800)
@@ -148,6 +149,17 @@ export default function HomePage() {
     fetchStats()
     const interval = setInterval(fetchStats, 30000)
     return () => clearInterval(interval)
+  }, [])
+
+  // Fetch real papers from Supabase; fall back to static data if DB is empty
+  useEffect(() => {
+    fetch('/api/papers')
+      .then(r => r.json())
+      .then(d => {
+        const live = d.data as Paper[]
+        if (live && live.length > 0) setAllPapers(live)
+      })
+      .catch(() => {}) // silently keep static fallback
   }, [])
 
   // Fetch top 4 reviews
@@ -232,8 +244,8 @@ export default function HomePage() {
                 <span className={gu ? 'font-gujarati' : ''}>{t.browsePapers}</span>
                 <ArrowRight size={16} />
               </Link>
-              <Link href="/login" className="btn-outline px-7 py-3.5 text-base flex items-center gap-2 justify-center">
-                <span className={gu ? 'font-gujarati' : ''}>{gu ? 'ડૅમો જુઓ' : t.watchDemo}</span>
+              <Link href="/demo" className="btn-outline px-7 py-3.5 text-base flex items-center gap-2 justify-center">
+                <span className={gu ? 'font-gujarati' : ''}>{gu ? 'ફ્રી ડૅમો' : 'Free Demo'}</span>
               </Link>
             </div>
           </motion.div>
