@@ -1,6 +1,6 @@
 'use client'
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { User } from '@supabase/supabase-js'
+import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
 export interface UserProfile {
@@ -30,54 +30,53 @@ const AuthContext = createContext<AuthContextType>({
   refreshProfile: async () => {},
 })
 
+// Use the token from the EXISTING session — never call getSession() again inside
+async function loadProfile(token: string, setProfile: (p: UserProfile) => void) {
+  try {
+    const res = await fetch('/api/profile/ensure', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (res.ok) {
+      const { profile } = await res.json()
+      if (profile) setProfile(profile as UserProfile)
+    }
+  } catch (err) {
+    console.error('Profile load error:', err)
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  async function fetchOrCreateProfile(authUser: User) {
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const token = session?.access_token
-      if (!token) return
-
-      const res = await fetch('/api/profile/ensure', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      })
-
-      if (res.ok) {
-        const { profile: p } = await res.json()
-        if (p) setProfile(p as UserProfile)
-      }
-    } catch (err) {
-      console.error('Profile fetch error:', err)
-    }
-  }
-
   useEffect(() => {
+    // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
-      const u = session?.user ?? null
-      setUser(u)
-      if (u) {
-        fetchOrCreateProfile(u).finally(() => setLoading(false))
+      if (session?.user && session.access_token) {
+        setUser(session.user)
+        loadProfile(session.access_token, setProfile).finally(() => setLoading(false))
       } else {
         setLoading(false)
       }
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      const u = session?.user ?? null
-      setUser(u)
-      if (u) {
-        fetchOrCreateProfile(u)
-      } else {
-        setProfile(null)
+    // Listen for auth changes (login, logout, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session: Session | null) => {
+        if (session?.user && session.access_token) {
+          setUser(session.user)
+          // Token is right here — no second getSession() call needed
+          loadProfile(session.access_token, setProfile)
+        } else {
+          setUser(null)
+          setProfile(null)
+        }
       }
-    })
+    )
 
     return () => subscription.unsubscribe()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const signOut = async () => {
@@ -87,7 +86,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const refreshProfile = async () => {
-    if (user) await fetchOrCreateProfile(user)
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.access_token) {
+      await loadProfile(session.access_token, setProfile)
+    }
   }
 
   return (
