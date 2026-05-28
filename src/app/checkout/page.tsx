@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ShieldCheck, Tag, Zap, Users } from 'lucide-react'
 import Navbar from '@/components/Navbar'
@@ -35,6 +35,15 @@ export default function CheckoutPage() {
   const [useWallet, setUseWallet] = useState(false)
   const [loading, setLoading] = useState(false)
   const [intentId, setIntentId] = useState<string | null>(null)
+
+  // Pre-fill referral code from /ref/[code] landing page
+  useEffect(() => {
+    const pending = localStorage.getItem('pendingReferralCode')
+    if (pending && !referralApplied) {
+      setReferral(pending)
+      localStorage.removeItem('pendingReferralCode')
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const walletBalance = profile?.wallet_balance ?? 0
   const subtotal = total()
