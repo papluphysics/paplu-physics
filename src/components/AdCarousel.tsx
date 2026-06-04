@@ -88,10 +88,10 @@ export default function AdCarousel() {
   return (
     <section
       aria-label="Promotions"
-      className="w-full bg-white px-4 pt-3 pb-2"
+      className="w-full bg-white"
     >
       <div
-        className="relative max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-md ring-1 ring-black/5 select-none"
+        className="relative overflow-hidden shadow-sm select-none"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onTouchStart={onTouchStart}
@@ -166,7 +166,7 @@ function SlideImage({ ad, reducedMotion, index }: { ad: Ad; reducedMotion: boole
       src={ad.image_url}
       alt={ad.title ?? 'Promotion'}
       fill
-      sizes="(max-width: 768px) 100vw, 1152px"
+      sizes="100vw"
       className={`object-cover ${reducedMotion ? '' : 'transition-opacity duration-500'}`}
       priority={index === 0}
       loading={index === 0 ? 'eager' : 'lazy'}

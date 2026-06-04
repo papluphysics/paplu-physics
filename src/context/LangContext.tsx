@@ -96,6 +96,17 @@ const translations = {
     howStep3Desc: 'Download your watermarked PDF right away, valid 6 months',
     howStep4Label: 'Crack Your Exam',
     howStep4Desc: 'Practice with expert papers and walk in confident',
+    // Choose Your Class section (home page only — appended, no existing keys changed)
+    chooseClassTitle: 'Choose Your Class',
+    chooseClassSub: 'Gujarat Board & competitive exams — pick your path',
+    class10CardTitle: 'Class 10 Science',
+    class10CardDesc: 'Pass · 75% · 90% paper packages',
+    class12MathCardTitle: 'Class 12 Mathematics',
+    class12MathCardDesc: 'Board · JEE · GUJCET prep',
+    class12PhysCardTitle: 'Class 12 Physics',
+    class12PhysCardDesc: 'Board · JEE · NEET · GUJCET',
+    gujcetCardTitle: 'GUJCET Prep',
+    gujcetCardDesc: 'Maths & Physics for GUJCET entrance',
   },
   gu: {
     // Nav
@@ -189,6 +200,17 @@ const translations = {
     howStep3Desc: 'PDF તુરંત ડાઉનલોડ, ૬ મહિના ઍક્સેસ',
     howStep4Label: 'પરીક્ષામાં સફળ',
     howStep4Desc: 'નિષ્ણાત પ્રશ્નપત્રો સાથે આત્મવિશ્વાસ સાથે જાઓ',
+    // Choose Your Class section (home page only — appended)
+    chooseClassTitle: 'તમારો વર્ગ પસંદ કરો',
+    chooseClassSub: 'ગુજરાત બોર્ડ અને સ્પર્ધાત્મક — તમારો માર્ગ પસંદ કરો',
+    class10CardTitle: 'ધોરણ ૧૦ વિજ્ઞાન',
+    class10CardDesc: 'પાસ · ૭૫% · ૯૦% પૅકેજ',
+    class12MathCardTitle: 'ધોરણ ૧૨ ગણિત',
+    class12MathCardDesc: 'બોર્ડ · JEE · GUJCET',
+    class12PhysCardTitle: 'ધોરણ ૧૨ ભૌતિક',
+    class12PhysCardDesc: 'બોર્ડ · JEE · NEET · GUJCET',
+    gujcetCardTitle: 'GUJCET પ્રવેશ',
+    gujcetCardDesc: 'GUJCET માટે ગણિત & ભૌતિક',
   }
 }
 

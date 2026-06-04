@@ -2,11 +2,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight, Star, Shield, Clock, Users, TrendingUp,
-  ChevronDown, X, Send, MessageSquarePlus, CheckCircle, Sparkles,
+  ChevronDown, X, Send, MessageSquarePlus, Sparkles,
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -53,10 +52,10 @@ const FAQS = [
 ]
 
 const FEATURES = [
-  { icon: Shield,    title: 'Secure PDFs',       titleGu: 'સુરક્ષિત PDF',         desc: 'Watermarked, expiring links, no sharing possible', descGu: 'વૉટરમાર્ક, એક્સ્પાઇરિંગ લિંક', color: 'bg-blue-50 text-blue-500' },
-  { icon: Clock,     title: '6 Month Access',    titleGu: '૬ મહિના ઍક્સેસ',       desc: 'Full access for 6 months after purchase',          descGu: 'ખરીદી પછી ૬ મહિના ઍક્સેસ',       color: 'bg-purple-50 text-purple-500' },
-  { icon: Users,     title: 'Referral Rewards',  titleGu: 'રેફરલ પુરસ્કાર',       desc: '20% commission on every referral purchase',        descGu: 'દરેક રેફરલ ખરીદી પર ૨૦%',         color: 'bg-emerald-50 text-emerald-500' },
-  { icon: TrendingUp,title: 'Expert Papers',     titleGu: 'નિષ્ણાત પ્રશ્નપત્રો', desc: 'Crafted by experienced Gujarat Board teachers',    descGu: 'અનુભવી શિક્ષકો દ્વારા તૈયાર',     color: 'bg-amber-50 text-amber-500' },
+  { icon: Shield,     title: 'Secure PDFs',       titleGu: 'સુરક્ષિત PDF',         desc: 'Watermarked, expiring links, no sharing possible', descGu: 'વૉટરમાર્ક, એક્સ્પાઇરિંગ લિંક', color: 'bg-blue-50 text-blue-500' },
+  { icon: Clock,      title: '6 Month Access',    titleGu: '૬ મહિના ઍક્સેસ',       desc: 'Full access for 6 months after purchase',          descGu: 'ખરીદી પછી ૬ મહિના ઍક્સેસ',       color: 'bg-purple-50 text-purple-500' },
+  { icon: Users,      title: 'Referral Rewards',  titleGu: 'રેફરલ પુરસ્કાર',       desc: '20% commission on every referral purchase',        descGu: 'દરેક રેફરલ ખરીદી પર ૨૦%',         color: 'bg-emerald-50 text-emerald-500' },
+  { icon: TrendingUp, title: 'Expert Papers',     titleGu: 'નિષ્ણાત પ્રશ્નપત્રો', desc: 'Crafted by experienced Gujarat Board teachers',    descGu: 'અનુભવી શિક્ષકો દ્વારા તૈયાર',     color: 'bg-amber-50 text-amber-500' },
 ]
 
 type Review = {
@@ -121,7 +120,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
   )
 }
 
-// ── How It Works inline SVG icons ────────────────────────────────────────────
+// ── How It Works SVG icons ───────────────────────────────────────────────────
 function IconBrowse() {
   return (
     <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
@@ -135,7 +134,6 @@ function IconBrowse() {
     </svg>
   )
 }
-
 function IconBuy() {
   return (
     <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
@@ -144,7 +142,6 @@ function IconBuy() {
     </svg>
   )
 }
-
 function IconPdf() {
   return (
     <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
@@ -156,7 +153,6 @@ function IconPdf() {
     </svg>
   )
 }
-
 function IconTrophy() {
   return (
     <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
@@ -172,10 +168,91 @@ function IconTrophy() {
 
 // ── Framer Motion variants ────────────────────────────────────────────────────
 const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.52, ease: [0.22, 1, 0.36, 1] as const } },
+  hidden: { opacity: 0, y: 24 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
 }
-const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.09 } } }
+
+// ── Hero paper-card visual (desktop right column) ────────────────────────────
+function HeroPaperVisual() {
+  return (
+    <div className="relative select-none w-full max-w-[380px]" aria-hidden="true">
+      {/* Soft ambient glow */}
+      <div className="absolute -inset-6 bg-gradient-to-br from-brand-50 via-sky-50/60 to-cyan-50/40 rounded-3xl -z-10 blur-sm" />
+
+      {/* Primary card — Physics */}
+      <motion.div
+        animate={{ y: [-6, 6, -6] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+        className="bg-white rounded-2xl border border-gray-100 p-5 mb-4"
+        style={{ boxShadow: '0 8px 32px rgba(18,100,240,0.10), 0 1px 3px rgba(0,0,0,0.06)' }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center text-2xl shrink-0">⚛️</div>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-bold text-gray-900 truncate">Physics — Class 12</div>
+            <div className="text-xs text-gray-400 mt-0.5">Board · JEE · NEET · GUJCET</div>
+          </div>
+          <span className="shrink-0 px-2.5 py-1 bg-brand-50 text-brand-600 text-[10px] font-bold rounded-full border border-brand-100">
+            Popular
+          </span>
+        </div>
+        <div className="flex items-end justify-between">
+          <div>
+            <div className="text-[10px] text-gray-400 mb-0.5 uppercase tracking-wide">Starting at</div>
+            <div className="text-3xl font-display font-bold text-gray-900">₹25</div>
+          </div>
+          <div className="flex flex-wrap gap-1 justify-end max-w-[160px]">
+            {['Pass', '75%', '90%', 'JEE', 'NEET'].map(tag => (
+              <span key={tag} className="text-[10px] font-medium text-gray-500 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Two mini cards */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <motion.div
+          animate={{ y: [4, -4, 4] }}
+          transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
+          className="bg-white rounded-xl border border-gray-100 p-4"
+          style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+        >
+          <div className="text-2xl mb-2">📐</div>
+          <div className="text-xs font-bold text-gray-800">Mathematics</div>
+          <div className="text-[10px] text-gray-400 mb-2">Class 12</div>
+          <div className="text-sm font-bold text-brand-500">₹25 / set</div>
+        </motion.div>
+
+        <motion.div
+          animate={{ y: [-3, 3, -3] }}
+          transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+          className="bg-white rounded-xl border border-gray-100 p-4"
+          style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+        >
+          <div className="text-2xl mb-2">📋</div>
+          <div className="text-xs font-bold text-gray-800">Class 10</div>
+          <div className="text-[10px] text-gray-400 mb-2">All Subjects</div>
+          <div className="text-sm font-bold text-brand-500">₹25 / set</div>
+        </motion.div>
+      </div>
+
+      {/* Combo deal pill */}
+      <motion.div
+        animate={{ scale: [1, 1.018, 1] }}
+        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+        className="flex items-center justify-center gap-2 py-3 px-5 rounded-xl text-white font-bold text-sm"
+        style={{ background: 'linear-gradient(135deg,#F59E0B,#F97316)', boxShadow: '0 8px 24px rgba(245,158,11,0.28)' }}
+      >
+        <span>🎯</span>
+        Any 3 sections for ₹60
+        <span className="bg-white/20 rounded px-1.5 py-0.5 text-xs font-semibold">Save ₹15</span>
+      </motion.div>
+    </div>
+  )
+}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function HomePage() {
@@ -192,7 +269,6 @@ export default function HomePage() {
   const [form,       setForm]       = useState({ name: '', city: '', rating: 5, text: '' })
   const [submitting, setSubmitting] = useState(false)
 
-  // ── Data fetching (unchanged) ───────────────────────────────────────────────
   const trending     = allPapers.filter(p => p.popular).slice(0, 3)
   const animStudents = useCountUp(stats.students, 1800)
   const animPapers   = useCountUp(stats.papers,   1200)
@@ -253,9 +329,9 @@ export default function HomePage() {
   }
 
   const statItems = [
-    { num: formatStudentCount(animStudents), label: gu ? 'વિદ્યાર્થીઓ' : t.studentsEnrolled, delay: 0.4, icon: '👨‍🎓' },
-    { num: String(animPapers),               label: gu ? 'પ્રશ્નપત્ર સેટ' : t.paperSets,      delay: 0.5, icon: '📄' },
-    { num: '₹60',                            label: gu ? 'કોઈ પણ ૩ નો કૉમ્બો' : t.comboDeal, delay: 0.6, icon: '🎯' },
+    { num: formatStudentCount(animStudents), label: gu ? 'વિદ્યાર્થીઓ' : t.studentsEnrolled, delay: 0.35 },
+    { num: String(animPapers),               label: gu ? 'પ્રશ્નપત્ર સેટ' : t.paperSets,     delay: 0.45 },
+    { num: '₹60',                            label: gu ? 'કોઈ પણ ૩ નો કૉમ્બો' : t.comboDeal, delay: 0.55 },
   ]
 
   const howSteps = [
@@ -265,294 +341,215 @@ export default function HomePage() {
     { Icon: IconTrophy, label: t.howStep4Label, desc: t.howStep4Desc, ring: 'ring-yellow-200' },
   ]
 
+  // "Choose Your Class" cards — link to existing catalog routes
+  const classCards = [
+    {
+      icon: '📋', href: '/papers?class=10',
+      title: t.class10CardTitle, desc: t.class10CardDesc,
+      bg: 'from-emerald-50 to-emerald-50/30', border: 'border-emerald-100',
+      accent: 'text-emerald-700',
+    },
+    {
+      icon: '📐', href: '/papers?subject=math&class=12',
+      title: t.class12MathCardTitle, desc: t.class12MathCardDesc,
+      bg: 'from-blue-50 to-blue-50/30', border: 'border-blue-100',
+      accent: 'text-blue-700',
+    },
+    {
+      icon: '⚛️', href: '/papers?subject=physics&class=12',
+      title: t.class12PhysCardTitle, desc: t.class12PhysCardDesc,
+      bg: 'from-purple-50 to-purple-50/30', border: 'border-purple-100',
+      accent: 'text-purple-700',
+    },
+    {
+      icon: '🏛️', href: '/papers?cat=gujcet',
+      title: t.gujcetCardTitle, desc: t.gujcetCardDesc,
+      bg: 'from-cyan-50 to-cyan-50/30', border: 'border-cyan-100',
+      accent: 'text-cyan-700',
+    },
+  ]
+
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
 
-      {/* ══════════════════════════════════════════════ AD STRIP */}
+      {/* ═══════════════════════════════════════════════ FULL-BLEED AD STRIP */}
       <AdCarousel />
 
       {/* ══════════════════════════════════════════════════════════════ HERO */}
-      <section className="relative min-h-[92vh] flex items-center overflow-hidden bg-[#04091A]">
+      <section className="bg-gradient-to-b from-slate-50 via-slate-50/60 to-white pt-16 pb-20 lg:pt-24 lg:pb-28">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
 
-        {/* Background blobs */}
-        <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-brand-600/25 rounded-full blur-[120px] animate-blob pointer-events-none" />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-indigo-600/15 rounded-full blur-[100px] animate-blob-delay pointer-events-none" />
-        <div className="absolute top-[40%] right-[20%] w-[200px] h-[200px] bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none" />
-
-        {/* Grid overlay */}
-        <div className="absolute inset-0 opacity-[0.035] pointer-events-none"
-          style={{ backgroundImage: 'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)', backgroundSize: '48px 48px' }} />
-
-        <div className="relative max-w-6xl mx-auto px-4 py-20 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-          {/* ── Left: copy + CTAs ── */}
-          <div className="text-center lg:text-left">
+            {/* ── Left: copy ── */}
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
               {/* Live badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm font-semibold text-brand-300 mb-7 backdrop-blur-sm">
-                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-50 border border-brand-100 rounded-full text-xs font-bold text-brand-600 mb-7 uppercase tracking-wide">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                 {gu ? 'ગુજરાત બોર્ડ · ધોરણ ૧૦ & ૧૨ વિજ્ઞાન' : 'Gujarat Board · Class 10 & 12 Science'}
               </div>
 
               {/* Headline */}
-              <h1 className={`text-5xl lg:text-[3.75rem] font-display font-bold leading-[1.1] mb-6 ${gu ? 'font-gujarati' : ''}`}>
-                <span className="text-white block">{gu ? 'સ્માર્ટ પ્રશ્નપત્ર' : 'Crack Your Exams'}</span>
-                <span className="block mt-1" style={{ background: 'linear-gradient(135deg,#60a5fa,#22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  {gu ? 'સાથે સફળ થાઓ' : 'with Smart Papers'}
-                </span>
+              <h1 className={`text-4xl lg:text-[3.25rem] font-display font-bold leading-[1.12] text-slate-900 mb-5 ${gu ? 'font-gujarati' : ''}`}>
+                {gu
+                  ? <><span className="block">સ્માર્ટ પ્રશ્નપત્ર</span><span className="text-brand-500">સાથે સફળ થાઓ</span></>
+                  : <><span className="block">Crack Your Exams</span><span className="text-brand-500">with Smart Papers</span></>
+                }
               </h1>
 
               {/* Sub */}
-              <p className={`text-gray-400 text-lg max-w-md mx-auto lg:mx-0 mb-10 leading-relaxed ${gu ? 'font-gujarati' : ''}`}>
+              <p className={`text-slate-500 text-lg leading-relaxed max-w-md mb-9 ${gu ? 'font-gujarati' : ''}`}>
                 {t.heroSub}
               </p>
 
               {/* CTA buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-14">
-
+              <div className="flex flex-wrap gap-3 mb-12">
                 <Link
                   href="/papers"
-                  className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 text-white font-bold rounded-2xl transition-all duration-300 hover:bg-brand-400 hover:-translate-y-0.5"
-                  style={{ boxShadow: '0 8px 32px rgba(18,100,240,0.4)' }}
+                  className="group inline-flex items-center gap-2 px-7 py-3.5 bg-brand-500 text-white font-bold rounded-2xl hover:bg-brand-600 transition-colors"
+                  style={{ boxShadow: '0 8px 24px rgba(18,100,240,0.28)' }}
                 >
                   <span className={gu ? 'font-gujarati' : ''}>{t.browsePapers}</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-200" />
+                  <ArrowRight size={17} className="group-hover:translate-x-0.5 transition-transform duration-200" />
                 </Link>
-
-                {/* Free Demo — unchanged Link */}
                 <Link
                   href="/demo"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-white/15 text-white font-semibold rounded-2xl hover:bg-white/8 transition-all duration-300 backdrop-blur-sm"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 border-2 border-gray-200 text-gray-700 font-semibold rounded-2xl hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600 transition-colors"
                 >
-                  <Sparkles size={16} className="text-amber-400" />
+                  <Sparkles size={15} className="text-amber-400" />
                   <span className={gu ? 'font-gujarati' : ''}>{gu ? 'ફ્રી ડૅમો' : 'Free Demo'}</span>
                 </Link>
               </div>
 
-              {/* Stat pills */}
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+              {/* Stat row */}
+              <div className="flex flex-wrap gap-8 pt-8 border-t border-gray-100">
                 {statItems.map(s => (
                   <motion.div
                     key={s.label}
-                    initial={{ opacity: 0, scale: 0.85 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: s.delay, duration: 0.45, type: 'spring', stiffness: 180, damping: 16 }}
-                    className="flex items-center gap-2.5 bg-white/6 border border-white/10 rounded-2xl px-4 py-2.5 backdrop-blur-sm"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: s.delay, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <span className="text-xl">{s.icon}</span>
-                    <div>
-                      <div className="font-display font-bold text-xl text-white tabular-nums leading-none">{s.num}</div>
-                      <div className={`text-xs text-gray-400 mt-0.5 ${gu ? 'font-gujarati' : ''}`}>{s.label}</div>
+                    <div className={`text-2xl font-display font-bold text-slate-900 tabular-nums leading-none ${gu ? 'font-gujarati' : ''}`}>
+                      {s.num}
                     </div>
+                    <div className={`text-xs text-slate-500 mt-1 ${gu ? 'font-gujarati' : ''}`}>{s.label}</div>
                   </motion.div>
                 ))}
               </div>
             </motion.div>
-          </div>
 
-          {/* ── Right: student photo (desktop) ── */}
-          <div className="hidden lg:flex justify-center items-end relative min-h-[500px]">
-
-            {/* Multi-layer glow aura behind student */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-600/20 rounded-full blur-[90px] pointer-events-none" />
-            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-56 h-56 bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none" />
-
-            {/* Floating subject badge — top-left */}
+            {/* ── Right: paper-card visual (desktop only) ── */}
             <motion.div
-              animate={{ y: [-6, 6, -6], rotate: [3, 4, 3] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-8 left-0 bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl px-4 py-3 text-white"
+              initial={{ opacity: 0, x: 28 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              className="hidden lg:flex justify-center items-center"
             >
-              <div className="text-2xl mb-1">📐</div>
-              <div className="text-xs font-bold">Mathematics</div>
-              <div className="text-[10px] text-white/60">Class 12</div>
-            </motion.div>
-
-            {/* Floating subject badge — bottom-right */}
-            <motion.div
-              animate={{ y: [5, -5, 5], rotate: [-3, -4, -3] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute bottom-20 right-0 bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl px-4 py-3 text-white"
-            >
-              <div className="text-2xl mb-1">⚛️</div>
-              <div className="text-xs font-bold">Physics</div>
-              <div className="text-[10px] text-white/60">Class 12</div>
-            </motion.div>
-
-            {/* Combo deal badge — top-right */}
-            <motion.div
-              animate={{ y: [-4, 4, -4], x: [-2, 2, -2] }}
-              transition={{ duration: 3.2, repeat: Infinity }}
-              className="absolute top-4 right-4 text-white rounded-2xl px-4 py-2.5 text-center z-20"
-              style={{ background: 'linear-gradient(135deg,#f59e0b,#f97316)', boxShadow: '0 12px 32px rgba(245,158,11,0.4)' }}
-            >
-              <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">Combo Deal</div>
-              <div className="text-2xl font-display font-bold leading-none">₹60</div>
-            </motion.div>
-
-            {/* Class 10 badge — bottom-left */}
-            <motion.div
-              animate={{ y: [4, -4, 4] }}
-              transition={{ duration: 3.8, repeat: Infinity }}
-              className="absolute bottom-12 left-4 text-white rounded-2xl px-4 py-2.5 text-center z-20"
-              style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: '0 12px 32px rgba(16,185,129,0.4)' }}
-            >
-              <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">Class 10</div>
-              <div className="text-sm font-bold">Available!</div>
-            </motion.div>
-
-            {/* Floating physics symbols */}
-            <motion.span
-              animate={{ y: [-5, 5, -5], rotate: [-8, 8, -8], opacity: [0.25, 0.45, 0.25] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-[28%] right-2 text-white text-xl font-mono font-bold pointer-events-none select-none"
-            >
-              E=mc²
-            </motion.span>
-            <motion.span
-              animate={{ y: [4, -4, 4], opacity: [0.2, 0.35, 0.2] }}
-              transition={{ duration: 3.5, repeat: Infinity }}
-              className="absolute top-[55%] left-3 text-white text-lg font-mono pointer-events-none select-none"
-            >
-              ∫ dx
-            </motion.span>
-            <motion.span
-              animate={{ y: [-3, 3, -3], opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 5, repeat: Infinity }}
-              className="absolute top-[18%] left-[38%] text-white text-base font-mono pointer-events-none select-none"
-            >
-              π = 3.14
-            </motion.span>
-
-            {/* Student image — gentle entry + soft float */}
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="relative z-10"
-            >
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="relative"
-              >
-                <Image
-                  src="/student.png"
-                  alt="Student holding books"
-                  width={360}
-                  height={440}
-                  priority
-                  className="relative z-10 max-w-[360px] w-full"
-                  style={{ filter: 'drop-shadow(0 24px 56px rgba(18,100,240,0.28)) drop-shadow(0 4px 16px rgba(0,0,0,0.4))' }}
-                />
-                {/* Bottom gradient — student fades into the hero background */}
-                <div
-                  className="absolute bottom-0 left-0 right-0 h-36 pointer-events-none"
-                  style={{ background: 'linear-gradient(to top, #04091A 0%, #04091A 18%, transparent 100%)' }}
-                />
-              </motion.div>
-            </motion.div>
-
-            {/* Ambient pulsing dots */}
-            {[
-              { top: '12%', left: '14%', size: 6, delay: 0 },
-              { top: '70%', left: '8%',  size: 4, delay: 1 },
-              { top: '32%', right: '8%', size: 5, delay: 0.5 },
-              { top: '80%', right: '18%',size: 3, delay: 1.5 },
-            ].map((d, i) => (
-              <motion.div
-                key={i}
-                animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.4, 1] }}
-                transition={{ duration: 2 + i * 0.5, repeat: Infinity, delay: d.delay }}
-                className="absolute rounded-full bg-brand-400"
-                style={{ width: d.size, height: d.size, top: d.top, left: (d as { left?: string }).left, right: (d as { right?: string }).right }}
-              />
-            ))}
-          </div>
-
-          {/* Mobile student image — smaller, below the CTA on narrow screens */}
-          <div className="lg:hidden flex justify-center mt-4 relative">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="relative w-52"
-            >
-              <Image
-                src="/student.png"
-                alt="Student holding books"
-                width={210}
-                height={260}
-                className="relative z-10 w-full"
-                style={{ filter: 'drop-shadow(0 12px 32px rgba(18,100,240,0.3)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))' }}
-              />
-              <div
-                className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
-                style={{ background: 'linear-gradient(to top, #04091A 0%, transparent 100%)' }}
-              />
+              <HeroPaperVisual />
             </motion.div>
           </div>
-        </div>
-
-        {/* Bottom wave */}
-        <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-          <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 56L1440 56L1440 28C1200 56 960 0 720 28C480 56 240 0 0 28L0 56Z" fill="white"/>
-          </svg>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════ BROWSE BY SUBJECT */}
-      <section className="max-w-6xl mx-auto px-4 py-20">
-        <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-80px' }} variants={stagger}>
-          <motion.div variants={fadeUp} className="text-center mb-12">
+      {/* ══════════════════════════════════════ CHOOSE YOUR CLASS */}
+      <section className="py-16 bg-white border-t border-gray-100">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.5 }}
+            className="text-center mb-10"
+          >
             <span className="inline-block px-4 py-1.5 bg-brand-50 text-brand-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3">
-              {gu ? 'વિષય પ્રમાણે' : 'Browse by Subject'}
+              {gu ? 'તમારો માર્ગ' : 'Your Path'}
             </span>
             <h2 className={`text-3xl font-display font-bold text-gray-900 tracking-tight ${gu ? 'font-gujarati' : ''}`}>
-              {gu ? 'તમારો વિષય પસંદ કરો' : 'Choose Your Subject'}
+              {t.chooseClassTitle}
             </h2>
-            <p className="text-gray-500 mt-2 text-sm">
-              {gu ? 'ગુજરાત બોર્ડ & સ્પર્ધાત્મક પ્રવેશ પરીક્ષાઓ' : 'Gujarat Board & competitive entrance exams'}
+            <p className={`text-gray-500 mt-2 text-sm ${gu ? 'font-gujarati' : ''}`}>
+              {t.chooseClassSub}
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[
-              { icon: '📐', label: gu ? 'ગણિત' : 'Mathematics', href: '/papers?subject=math&class=12', from: 'from-blue-50',   to: 'to-blue-100/50',   border: 'border-blue-100',   text: 'text-blue-700',   badge: 'Class 12' },
-              { icon: '⚛️', label: gu ? 'ભૌતિક વિજ્ઞાન' : 'Physics',     href: '/papers?subject=physics&class=12', from: 'from-purple-50', to: 'to-purple-100/50', border: 'border-purple-100', text: 'text-purple-700', badge: 'Class 12' },
-              { icon: '📋', label: gu ? 'ધોરણ ૧૦' : 'Class 10',         href: '/papers?class=10',    from: 'from-emerald-50', to: 'to-emerald-100/50', border: 'border-emerald-100', text: 'text-emerald-700', badge: 'All Subjects' },
-              { icon: '🎯', label: gu ? 'JEE' : 'JEE Prep',             href: '/papers?cat=jee',     from: 'from-amber-50',   to: 'to-amber-100/50',   border: 'border-amber-100',  text: 'text-amber-700',  badge: 'Entrance' },
-              { icon: '🩺', label: gu ? 'NEET' : 'NEET Prep',           href: '/papers?cat=neet',    from: 'from-rose-50',    to: 'to-rose-100/50',    border: 'border-rose-100',   text: 'text-rose-700',   badge: 'Medical' },
-              { icon: '🏛️', label: gu ? 'GUJCET' : 'GUJCET',           href: '/papers?cat=gujcet',  from: 'from-cyan-50',    to: 'to-cyan-100/50',    border: 'border-cyan-100',   text: 'text-cyan-700',   badge: 'Gujarat' },
-              { icon: '🏆', label: gu ? '૯૦%+ સ્કોર' : 'Above 90%',   href: '/papers?cat=90',      from: 'from-indigo-50',  to: 'to-indigo-100/50',  border: 'border-indigo-100', text: 'text-indigo-700', badge: 'Top Score' },
-              { icon: '✅', label: gu ? 'પાસ પૅકેજ' : 'Pass Package',   href: '/papers?cat=pass',    from: 'from-teal-50',    to: 'to-teal-100/50',    border: 'border-teal-100',   text: 'text-teal-700',   badge: 'Guaranteed' },
-            ].map(s => (
-              <motion.div key={s.label} variants={fadeUp}>
+          <motion.div
+            initial="hidden" whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={stagger}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            {classCards.map(card => (
+              <motion.div key={card.href} variants={fadeUp}>
                 <Link
-                  href={s.href}
-                  className={`group flex flex-col items-center gap-3 p-5 rounded-2xl border ${s.border} bg-gradient-to-b ${s.from} ${s.to} hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden`}
+                  href={card.href}
+                  className={`group flex flex-col items-center text-center gap-3 p-6 rounded-2xl border bg-gradient-to-b ${card.bg} ${card.border} hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}
                 >
-                  <span className="text-4xl group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">{s.icon}</span>
-                  <div className="text-center">
-                    <div className={`text-sm font-bold ${s.text} ${gu ? 'font-gujarati' : ''}`}>{s.label}</div>
-                    <div className="text-xs text-gray-400 mt-0.5">{s.badge}</div>
+                  <span className="text-4xl group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">{card.icon}</span>
+                  <div>
+                    <div className={`text-sm font-bold text-gray-900 ${gu ? 'font-gujarati' : ''}`}>{card.title}</div>
+                    <div className={`text-xs text-gray-500 mt-0.5 ${gu ? 'font-gujarati' : ''}`}>{card.desc}</div>
                   </div>
+                  <span className={`text-xs font-semibold ${card.accent} flex items-center gap-0.5 opacity-80 group-hover:opacity-100 transition-opacity`}>
+                    {gu ? 'જુઓ' : 'Explore'} <ArrowRight size={11} />
+                  </span>
                 </Link>
               </motion.div>
             ))}
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </section>
 
-      {/* ═════════════════════════════════════════ TRENDING PAPERS */}
-      <section className="bg-gradient-to-b from-gray-50 to-white py-20">
+      {/* ═════════════════════════════════════════ BROWSE BY SUBJECT */}
+      <section className="bg-slate-50/50 py-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-80px' }} variants={stagger}>
+            <motion.div variants={fadeUp} className="text-center mb-12">
+              <span className="inline-block px-4 py-1.5 bg-brand-50 text-brand-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3">
+                {gu ? 'વિષય પ્રમાણે' : 'Browse by Subject'}
+              </span>
+              <h2 className={`text-3xl font-display font-bold text-gray-900 tracking-tight ${gu ? 'font-gujarati' : ''}`}>
+                {gu ? 'તમારો વિષય પસંદ કરો' : 'Choose Your Subject'}
+              </h2>
+              <p className="text-gray-500 mt-2 text-sm">
+                {gu ? 'ગુજરાત બોર્ડ & સ્પર્ધાત્મક પ્રવેશ પરીક્ષાઓ' : 'Gujarat Board & competitive entrance exams'}
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                { icon: '📐', label: gu ? 'ગણિત' : 'Mathematics', href: '/papers?subject=math&class=12', from: 'from-blue-50',   to: 'to-blue-100/50',   border: 'border-blue-100',   text: 'text-blue-700',   badge: 'Class 12' },
+                { icon: '⚛️', label: gu ? 'ભૌતિક વિજ્ઞાન' : 'Physics',     href: '/papers?subject=physics&class=12', from: 'from-purple-50', to: 'to-purple-100/50', border: 'border-purple-100', text: 'text-purple-700', badge: 'Class 12' },
+                { icon: '📋', label: gu ? 'ધોરણ ૧૦' : 'Class 10',         href: '/papers?class=10',    from: 'from-emerald-50', to: 'to-emerald-100/50', border: 'border-emerald-100', text: 'text-emerald-700', badge: 'All Subjects' },
+                { icon: '🎯', label: gu ? 'JEE' : 'JEE Prep',             href: '/papers?cat=jee',     from: 'from-amber-50',   to: 'to-amber-100/50',   border: 'border-amber-100',  text: 'text-amber-700',  badge: 'Entrance' },
+                { icon: '🩺', label: gu ? 'NEET' : 'NEET Prep',           href: '/papers?cat=neet',    from: 'from-rose-50',    to: 'to-rose-100/50',    border: 'border-rose-100',   text: 'text-rose-700',   badge: 'Medical' },
+                { icon: '🏛️', label: gu ? 'GUJCET' : 'GUJCET',           href: '/papers?cat=gujcet',  from: 'from-cyan-50',    to: 'to-cyan-100/50',    border: 'border-cyan-100',   text: 'text-cyan-700',   badge: 'Gujarat' },
+                { icon: '🏆', label: gu ? '૯૦%+ સ્કોર' : 'Above 90%',   href: '/papers?cat=90',      from: 'from-indigo-50',  to: 'to-indigo-100/50',  border: 'border-indigo-100', text: 'text-indigo-700', badge: 'Top Score' },
+                { icon: '✅', label: gu ? 'પાસ પૅકેજ' : 'Pass Package',   href: '/papers?cat=pass',    from: 'from-teal-50',    to: 'to-teal-100/50',    border: 'border-teal-100',   text: 'text-teal-700',   badge: 'Guaranteed' },
+              ].map(s => (
+                <motion.div key={s.label} variants={fadeUp}>
+                  <Link
+                    href={s.href}
+                    className={`group flex flex-col items-center gap-3 p-5 rounded-2xl border ${s.border} bg-gradient-to-b ${s.from} ${s.to} hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden`}
+                  >
+                    <span className="text-4xl group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">{s.icon}</span>
+                    <div className="text-center">
+                      <div className={`text-sm font-bold ${s.text} ${gu ? 'font-gujarati' : ''}`}>{s.label}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{s.badge}</div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ TRENDING PAPERS */}
+      <section className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
@@ -595,66 +592,60 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════ HOW IT WORKS */}
-      <section className="max-w-6xl mx-auto px-4 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.5 }}
-          className="text-center mb-14"
-        >
-          <span className="inline-block px-4 py-1.5 bg-brand-50 text-brand-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3">
-            {gu ? 'પ્રક્રિયા' : 'Process'}
-          </span>
-          <h2 className={`text-3xl font-display font-bold text-gray-900 tracking-tight ${gu ? 'font-gujarati' : ''}`}>
-            {t.howItWorksLabel}
-          </h2>
-        </motion.div>
-
-        <div className="relative">
-          {/* Connector line (desktop only) */}
-          <div className="hidden lg:block absolute top-[52px] left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-brand-100 via-brand-300 to-brand-100 pointer-events-none" />
-
+      <section className="bg-slate-50/50 py-20">
+        <div className="max-w-6xl mx-auto px-4">
           <motion.div
-            initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }}
-            variants={stagger}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6"
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.5 }}
+            className="text-center mb-14"
           >
-            {howSteps.map((step, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="flex flex-col items-center text-center group"
-              >
-                {/* Icon ring */}
-                <div className={`relative w-24 h-24 rounded-full bg-white border-2 ${step.ring} flex items-center justify-center mb-5 shadow-md group-hover:shadow-lg transition-shadow duration-300 ring-4 ring-offset-2 ring-transparent group-hover:${step.ring} group-hover:ring-offset-0`}
-                  style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.07)' }}
-                >
-                  {/* Step number bubble */}
-                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-500 text-white text-xs font-bold flex items-center justify-center shadow-sm">
-                    {i + 1}
-                  </span>
-                  <motion.div
-                    whileInView={{ scale: [0.8, 1.05, 1] }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.12, duration: 0.5, ease: 'easeOut' }}
-                  >
-                    <step.Icon />
-                  </motion.div>
-                </div>
-
-                <h3 className={`font-display font-bold text-gray-900 text-base mb-2 ${gu ? 'font-gujarati' : ''}`}>
-                  {step.label}
-                </h3>
-                <p className={`text-sm text-gray-500 leading-relaxed max-w-[180px] ${gu ? 'font-gujarati' : ''}`}>
-                  {step.desc}
-                </p>
-              </motion.div>
-            ))}
+            <span className="inline-block px-4 py-1.5 bg-brand-50 text-brand-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3">
+              {gu ? 'પ્રક્રિયા' : 'Process'}
+            </span>
+            <h2 className={`text-3xl font-display font-bold text-gray-900 tracking-tight ${gu ? 'font-gujarati' : ''}`}>
+              {t.howItWorksLabel}
+            </h2>
           </motion.div>
+
+          <div className="relative">
+            <div className="hidden lg:block absolute top-[52px] left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-brand-100 via-brand-200 to-brand-100 pointer-events-none" />
+            <motion.div
+              initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }}
+              variants={stagger}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6"
+            >
+              {howSteps.map((step, i) => (
+                <motion.div key={i} variants={fadeUp} className="flex flex-col items-center text-center group">
+                  <div
+                    className={`relative w-24 h-24 rounded-full bg-white border-2 ${step.ring} flex items-center justify-center mb-5 shadow-md group-hover:shadow-lg transition-shadow duration-300 ring-4 ring-offset-2 ring-transparent group-hover:${step.ring}`}
+                    style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.07)' }}
+                  >
+                    <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-500 text-white text-xs font-bold flex items-center justify-center shadow-sm">
+                      {i + 1}
+                    </span>
+                    <motion.div
+                      whileInView={{ scale: [0.8, 1.05, 1] }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.12, duration: 0.5, ease: 'easeOut' }}
+                    >
+                      <step.Icon />
+                    </motion.div>
+                  </div>
+                  <h3 className={`font-display font-bold text-gray-900 text-base mb-2 ${gu ? 'font-gujarati' : ''}`}>
+                    {step.label}
+                  </h3>
+                  <p className={`text-sm text-gray-500 leading-relaxed max-w-[180px] ${gu ? 'font-gujarati' : ''}`}>
+                    {step.desc}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* ═════════════════════════════════════════ WHY CHOOSE US */}
-      <section className="bg-gray-50/70 py-20">
+      <section className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
@@ -697,7 +688,7 @@ export default function HomePage() {
       </section>
 
       {/* ═════════════════════════════════════════ STUDENT REVIEWS */}
-      <section className="bg-gradient-to-b from-brand-50/60 to-white py-20">
+      <section className="bg-gradient-to-b from-brand-50/40 to-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
@@ -718,9 +709,7 @@ export default function HomePage() {
                 <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 animate-pulse">
                   <div className="flex gap-1 mb-3">{[...Array(5)].map((__, j) => <div key={j} className="w-3 h-3 rounded-full bg-gray-100" />)}</div>
                   <div className="space-y-2 mb-4">
-                    <div className="h-3 bg-gray-100 rounded w-full" />
-                    <div className="h-3 bg-gray-100 rounded w-4/5" />
-                    <div className="h-3 bg-gray-100 rounded w-3/5" />
+                    <div className="h-3 bg-gray-100 rounded w-full" /><div className="h-3 bg-gray-100 rounded w-4/5" /><div className="h-3 bg-gray-100 rounded w-3/5" />
                   </div>
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-gray-100" />
@@ -796,7 +785,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ FAQ */}
-      <section className="max-w-3xl mx-auto px-4 py-20">
+      <section className="bg-white max-w-3xl mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.5 }}
@@ -850,7 +839,7 @@ export default function HomePage() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="relative overflow-hidden rounded-3xl px-8 py-14 md:px-16 text-center text-white"
-          style={{ background: 'linear-gradient(135deg,#0D52CC 0%,#1264F0 50%,#06B6D4 100%)' }}
+          style={{ background: 'linear-gradient(135deg,#0D52CC 0%,#1264F0 55%,#06B6D4 100%)' }}
         >
           <div className="absolute inset-0 opacity-10 pointer-events-none"
             style={{ backgroundImage: 'radial-gradient(circle at 20% 50%,#fff 1px,transparent 1px),radial-gradient(circle at 80% 20%,#fff 1px,transparent 1px)', backgroundSize: '48px 48px' }} />
