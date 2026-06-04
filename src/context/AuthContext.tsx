@@ -12,6 +12,10 @@ export interface UserProfile {
   wallet_balance: number
   is_blocked: boolean
   created_at: string
+  // Location fields — populated after student sets their location via LocationPickerModal
+  state:    string | null
+  district: string | null
+  city:     string | null
 }
 
 interface AuthContextType {

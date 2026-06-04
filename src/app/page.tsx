@@ -11,6 +11,8 @@ import {
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PaperCard from '@/components/PaperCard'
+import AdCarousel from '@/components/AdCarousel'
+import LocationPickerModal from '@/components/LocationPickerModal'
 import { useLang } from '@/context/LangContext'
 import { PAPERS, type Paper } from '@/lib/papers'
 import { supabase } from '@/lib/supabase'
@@ -267,6 +269,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
+
+      {/* ══════════════════════════════════════════════ AD STRIP */}
+      <AdCarousel />
 
       {/* ══════════════════════════════════════════════════════════════ HERO */}
       <section className="relative min-h-[92vh] flex items-center overflow-hidden bg-[#04091A]">
@@ -876,6 +881,9 @@ export default function HomePage() {
       </section>
 
       <Footer />
+
+      {/* ═══════════════════════════════════ LOCATION PICKER (one-time) */}
+      <LocationPickerModal />
 
       {/* ════════════════════════════════════════ WRITE REVIEW MODAL */}
       <AnimatePresence>
