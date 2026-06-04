@@ -84,6 +84,18 @@ const translations = {
     filterBy: 'Filter by',
     trending: 'Trending Papers',
     viewAll: 'View All',
+    // Mascot + How It Works (home page only — appended, no existing keys changed)
+    mascotWorry: "I don't understand anything… what do I do?",
+    mascotHappy: 'Paplu Physics saved me!',
+    howItWorksLabel: 'How It Works',
+    howStep1Label: 'Browse Papers',
+    howStep1Desc: 'Pick from Class 10, 12, JEE, NEET & GUJCET sets',
+    howStep2Label: 'Buy Securely',
+    howStep2Desc: '₹25 per set — or grab any 3 for ₹60 via UPI / card',
+    howStep3Label: 'Instant PDF Access',
+    howStep3Desc: 'Download your watermarked PDF right away, valid 6 months',
+    howStep4Label: 'Crack Your Exam',
+    howStep4Desc: 'Practice with expert papers and walk in confident',
   },
   gu: {
     // Nav
@@ -165,6 +177,18 @@ const translations = {
     filterBy: 'ફિલ્ટર',
     trending: 'ટ્રેન્ડિંગ પ્રશ્નપત્રો',
     viewAll: 'બધા જુઓ',
+    // Mascot + How It Works (home page only — appended, no existing keys changed)
+    mascotWorry: 'કઈ સમજ નથી... શું કરું?',
+    mascotHappy: 'Paplu Physics ઉગારી લીધો!',
+    howItWorksLabel: 'કેવી રીતે કામ કરે છે',
+    howStep1Label: 'પ્રશ્નપત્ર જુઓ',
+    howStep1Desc: 'ધોરણ ૧૦, ૧૨, JEE, NEET, GUJCET ના સેટ',
+    howStep2Label: 'સુરક્ષિત ખરીદી',
+    howStep2Desc: '₹25/સેટ — અથવા ૩ ₹60 — UPI, કાર્ડ, વૉલેટ',
+    howStep3Label: 'તાત્કાલિક PDF ઍક્સેસ',
+    howStep3Desc: 'PDF તુરંત ડાઉનલોડ, ૬ મહિના ઍક્સેસ',
+    howStep4Label: 'પરીક્ષામાં સફળ',
+    howStep4Desc: 'નિષ્ણાત પ્રશ્નપત્રો સાથે આત્મવિશ્વાસ સાથે જાઓ',
   }
 }
 
