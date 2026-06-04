@@ -1,8 +1,8 @@
 'use client'
-import { useState, useEffect, useRef, useCallback } from 'react'
-import dynamic from 'next/dynamic'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight, Star, Shield, Clock, Users, TrendingUp,
@@ -15,18 +15,6 @@ import { useLang } from '@/context/LangContext'
 import { PAPERS, type Paper } from '@/lib/papers'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
-import type { MascotState } from '@/components/HeroMascot'
-
-// ── Dynamic import keeps the SVG animation out of the initial bundle ────────
-const HeroMascot = dynamic(
-  () => import('@/components/HeroMascot').then(m => ({ default: m.HeroMascot })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-[210px] h-[310px] rounded-3xl bg-white/4 animate-pulse hidden lg:block" />
-    ),
-  }
-)
 
 // ── Static data ─────────────────────────────────────────────────────────────
 const FAQS = [
@@ -202,32 +190,6 @@ export default function HomePage() {
   const [form,       setForm]       = useState({ name: '', city: '', rating: 5, text: '' })
   const [submitting, setSubmitting] = useState(false)
 
-  // ── Mascot state ────────────────────────────────────────────────────────────
-  const [mascotState,   setMascotState]   = useState<MascotState>('sad')
-  const [mascotBubble,  setMascotBubble]  = useState<string | null>(null)
-  // Tracks whether the user has clicked Browse Papers at least once this session
-  const hasClickedOnceRef = useRef(false)
-
-  // Show the worry bubble after the character slides in
-  useEffect(() => {
-    const id = setTimeout(() => setMascotBubble(t.mascotWorry), 900)
-    return () => clearTimeout(id)
-  }, [t.mascotWorry])
-
-  // ── Browse Papers click handler ─────────────────────────────────────────────
-  const handleBrowseClick = useCallback(() => {
-    // Repeat visitors: near-instant navigation (no delay)
-    if (hasClickedOnceRef.current) {
-      router.push('/papers')
-      return
-    }
-    hasClickedOnceRef.current = true
-    // First click: play the celebration, then navigate after 0.6 s
-    setMascotState('happy')
-    setMascotBubble(t.mascotHappy)
-    setTimeout(() => router.push('/papers'), 600)
-  }, [router, t.mascotHappy])
-
   // ── Data fetching (unchanged) ───────────────────────────────────────────────
   const trending     = allPapers.filter(p => p.popular).slice(0, 3)
   const animStudents = useCountUp(stats.students, 1800)
@@ -349,26 +311,14 @@ export default function HomePage() {
               {/* CTA buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-14">
 
-                {/* ─── Browse Papers — intercepts click for mascot story ─── */}
-                <motion.button
-                  onClick={handleBrowseClick}
-                  /* Gentle pulse glow while mascot is sad (draws attention) */
-                  animate={mascotState === 'sad' ? {
-                    boxShadow: [
-                      '0 8px 32px rgba(18,100,240,0.35)',
-                      '0 8px 52px rgba(18,100,240,0.65)',
-                      '0 8px 32px rgba(18,100,240,0.35)',
-                    ],
-                    scale: [1, 1.03, 1],
-                  } : { boxShadow: '0 8px 32px rgba(18,100,240,0.35)', scale: 1 }}
-                  transition={mascotState === 'sad'
-                    ? { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
-                    : { duration: 0.3 }}
-                  className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 text-white font-bold rounded-2xl transition-colors duration-300 hover:bg-brand-400"
+                <Link
+                  href="/papers"
+                  className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 text-white font-bold rounded-2xl transition-all duration-300 hover:bg-brand-400 hover:-translate-y-0.5"
+                  style={{ boxShadow: '0 8px 32px rgba(18,100,240,0.4)' }}
                 >
                   <span className={gu ? 'font-gujarati' : ''}>{t.browsePapers}</span>
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-200" />
-                </motion.button>
+                </Link>
 
                 {/* Free Demo — unchanged Link */}
                 <Link
@@ -401,69 +351,119 @@ export default function HomePage() {
             </motion.div>
           </div>
 
-          {/* ── Right: mascot ── */}
-          <div className="hidden lg:flex justify-center items-center relative min-h-[440px]">
-            {/* Glow behind mascot */}
-            <div className="absolute w-64 h-64 bg-brand-500/15 rounded-full blur-3xl animate-pulse-slow pointer-events-none" />
+          {/* ── Right: student photo (desktop) ── */}
+          <div className="hidden lg:flex justify-center items-end relative min-h-[500px]">
 
-            {/* Floating subject badges — visible around the mascot */}
+            {/* Multi-layer glow aura behind student */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-600/20 rounded-full blur-[90px] pointer-events-none" />
+            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-56 h-56 bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none" />
+
+            {/* Floating subject badge — top-left */}
             <motion.div
               animate={{ y: [-6, 6, -6], rotate: [3, 4, 3] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-4 left-0 bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl px-4 py-3 text-white"
+              className="absolute top-8 left-0 bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl px-4 py-3 text-white"
             >
               <div className="text-2xl mb-1">📐</div>
               <div className="text-xs font-bold">Mathematics</div>
               <div className="text-[10px] text-white/60">Class 12</div>
             </motion.div>
 
+            {/* Floating subject badge — bottom-right */}
             <motion.div
               animate={{ y: [5, -5, 5], rotate: [-3, -4, -3] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute bottom-8 right-0 bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl px-4 py-3 text-white"
+              className="absolute bottom-20 right-0 bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl px-4 py-3 text-white"
             >
               <div className="text-2xl mb-1">⚛️</div>
               <div className="text-xs font-bold">Physics</div>
               <div className="text-[10px] text-white/60">Class 12</div>
             </motion.div>
 
-            {/* Combo deal badge */}
+            {/* Combo deal badge — top-right */}
             <motion.div
               animate={{ y: [-4, 4, -4], x: [-2, 2, -2] }}
               transition={{ duration: 3.2, repeat: Infinity }}
-              className="absolute top-2 right-4 text-white rounded-2xl px-4 py-2.5 text-center"
-              style={{ background: 'linear-gradient(135deg,#f59e0b,#f97316)', boxShadow: '0 12px 32px rgba(245,158,11,0.38)' }}
+              className="absolute top-4 right-4 text-white rounded-2xl px-4 py-2.5 text-center z-20"
+              style={{ background: 'linear-gradient(135deg,#f59e0b,#f97316)', boxShadow: '0 12px 32px rgba(245,158,11,0.4)' }}
             >
               <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">Combo Deal</div>
               <div className="text-2xl font-display font-bold leading-none">₹60</div>
             </motion.div>
 
-            {/* Class 10 badge */}
+            {/* Class 10 badge — bottom-left */}
             <motion.div
               animate={{ y: [4, -4, 4] }}
               transition={{ duration: 3.8, repeat: Infinity }}
-              className="absolute bottom-4 left-6 text-white rounded-2xl px-4 py-2.5 text-center"
-              style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: '0 12px 32px rgba(16,185,129,0.38)' }}
+              className="absolute bottom-12 left-4 text-white rounded-2xl px-4 py-2.5 text-center z-20"
+              style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: '0 12px 32px rgba(16,185,129,0.4)' }}
             >
               <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">Class 10</div>
               <div className="text-sm font-bold">Available!</div>
             </motion.div>
 
-            {/* The character — sits in the centre of all the badges */}
-            <div className="relative z-10 mt-10">
-              <HeroMascot state={mascotState} bubble={mascotBubble} />
-            </div>
+            {/* Floating physics symbols */}
+            <motion.span
+              animate={{ y: [-5, 5, -5], rotate: [-8, 8, -8], opacity: [0.25, 0.45, 0.25] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute top-[28%] right-2 text-white text-xl font-mono font-bold pointer-events-none select-none"
+            >
+              E=mc²
+            </motion.span>
+            <motion.span
+              animate={{ y: [4, -4, 4], opacity: [0.2, 0.35, 0.2] }}
+              transition={{ duration: 3.5, repeat: Infinity }}
+              className="absolute top-[55%] left-3 text-white text-lg font-mono pointer-events-none select-none"
+            >
+              ∫ dx
+            </motion.span>
+            <motion.span
+              animate={{ y: [-3, 3, -3], opacity: [0.2, 0.4, 0.2] }}
+              transition={{ duration: 5, repeat: Infinity }}
+              className="absolute top-[18%] left-[38%] text-white text-base font-mono pointer-events-none select-none"
+            >
+              π = 3.14
+            </motion.span>
 
-            {/* Ambient floating dots */}
+            {/* Student image — gentle entry + soft float */}
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10"
+            >
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+                className="relative"
+              >
+                <Image
+                  src="/student.png"
+                  alt="Student holding books"
+                  width={360}
+                  height={440}
+                  priority
+                  className="relative z-10 max-w-[360px] w-full"
+                  style={{ filter: 'drop-shadow(0 24px 56px rgba(18,100,240,0.28)) drop-shadow(0 4px 16px rgba(0,0,0,0.4))' }}
+                />
+                {/* Bottom gradient — student fades into the hero background */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-36 pointer-events-none"
+                  style={{ background: 'linear-gradient(to top, #04091A 0%, #04091A 18%, transparent 100%)' }}
+                />
+              </motion.div>
+            </motion.div>
+
+            {/* Ambient pulsing dots */}
             {[
-              { top: '14%', left: '12%', size: 6, delay: 0 },
-              { top: '68%', left: '6%',  size: 4, delay: 1 },
-              { top: '28%', right: '6%', size: 5, delay: 0.5 },
-              { top: '78%', right: '16%',size: 3, delay: 1.5 },
+              { top: '12%', left: '14%', size: 6, delay: 0 },
+              { top: '70%', left: '8%',  size: 4, delay: 1 },
+              { top: '32%', right: '8%', size: 5, delay: 0.5 },
+              { top: '80%', right: '18%',size: 3, delay: 1.5 },
             ].map((d, i) => (
               <motion.div
                 key={i}
-                animate={{ opacity: [0.3, 0.75, 0.3], scale: [1, 1.35, 1] }}
+                animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.4, 1] }}
                 transition={{ duration: 2 + i * 0.5, repeat: Infinity, delay: d.delay }}
                 className="absolute rounded-full bg-brand-400"
                 style={{ width: d.size, height: d.size, top: d.top, left: (d as { left?: string }).left, right: (d as { right?: string }).right }}
@@ -471,9 +471,27 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Mobile mascot — smaller, below CTA on narrow screens */}
-          <div className="lg:hidden flex justify-center mt-2 relative">
-            <HeroMascot state={mascotState} bubble={mascotBubble} small />
+          {/* Mobile student image — smaller, below the CTA on narrow screens */}
+          <div className="lg:hidden flex justify-center mt-4 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="relative w-52"
+            >
+              <Image
+                src="/student.png"
+                alt="Student holding books"
+                width={210}
+                height={260}
+                className="relative z-10 w-full"
+                style={{ filter: 'drop-shadow(0 12px 32px rgba(18,100,240,0.3)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))' }}
+              />
+              <div
+                className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+                style={{ background: 'linear-gradient(to top, #04091A 0%, transparent 100%)' }}
+              />
+            </motion.div>
           </div>
         </div>
 
