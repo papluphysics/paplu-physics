@@ -110,9 +110,22 @@ export async function GET(req: NextRequest) {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     })
 
-    return NextResponse.json({ ads: sorted })
+    // Authenticated responses are user-specific (location-targeted) — never cache.
+    // Unauthenticated (national ads only) are safe to cache briefly.
+    const cacheHeader = token
+      ? 'no-store'
+      : 'public, max-age=30, stale-while-revalidate=60'
+
+    return NextResponse.json({ ads: sorted }, {
+      headers: {
+        'Cache-Control': cacheHeader,
+        'Vary': 'Authorization',
+      },
+    })
   } catch (err) {
     console.error('Ads route error:', err)
-    return NextResponse.json({ ads: [] })
+    return NextResponse.json({ ads: [] }, {
+      headers: { 'Cache-Control': 'no-store' },
+    })
   }
 }
