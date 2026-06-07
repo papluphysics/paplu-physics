@@ -10,7 +10,9 @@ import {
 import Footer from '@/components/Footer'
 import PaperCard from '@/components/PaperCard'
 import LocationPickerModal from '@/components/LocationPickerModal'
+import PreAuthModal from '@/components/PreAuthModal'
 import { useLang } from '@/context/LangContext'
+import { useAuth } from '@/context/AuthContext'
 import { PAPERS, type Paper } from '@/lib/papers'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -243,10 +245,12 @@ function HeroPaperVisual() {
 // ── Main client component ─────────────────────────────────────────────────────
 export default function HomeClient() {
   const { t, lang } = useLang()
+  const { user } = useAuth()
   const router = useRouter()
   const gu = lang === 'gu'
 
-  const [openFaq,    setOpenFaq]    = useState<number | null>(null)
+  const [openFaq,     setOpenFaq]     = useState<number | null>(null)
+  const [showPreAuth, setShowPreAuth] = useState(false)
   const [stats,      setStats]      = useState({ students: 0, papers: 0 })
   const [allPapers,  setAllPapers]  = useState<Paper[]>(PAPERS)
   const [reviews,    setReviews]    = useState<Review[] | null>(null)
@@ -394,6 +398,7 @@ export default function HomeClient() {
           >
             <Link
               href="/demo"
+              onClick={e => { if (!user) { e.preventDefault(); setShowPreAuth(true) } }}
               className="group flex flex-col sm:flex-row items-center gap-5 sm:gap-7 w-full p-6 sm:p-8 rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 via-orange-50/40 to-white hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
               style={{ boxShadow: '0 2px 12px rgba(245,158,11,0.10)' }}
             >
@@ -531,6 +536,7 @@ export default function HomeClient() {
                 </Link>
                 <Link
                   href="/demo"
+                  onClick={e => { if (!user) { e.preventDefault(); setShowPreAuth(true) } }}
                   className="inline-flex items-center justify-center gap-2 px-7 py-3 sm:py-3.5 min-h-[48px] w-full sm:w-auto border-2 border-gray-200 text-gray-700 font-semibold rounded-2xl hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600 transition-colors"
                 >
                   <Sparkles size={15} className="text-amber-400 shrink-0" />
@@ -874,6 +880,7 @@ export default function HomeClient() {
 
       {/* One-time location picker (shows after login if state not set) */}
       <LocationPickerModal />
+      <PreAuthModal open={showPreAuth} onClose={() => setShowPreAuth(false)} />
 
       {/* Write review modal */}
       <AnimatePresence>

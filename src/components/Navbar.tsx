@@ -7,6 +7,7 @@ import { useLang } from '@/context/LangContext'
 import { useAuth } from '@/context/AuthContext'
 import { useCart } from '@/lib/cartStore'
 import CartDrawer from './CartDrawer'
+import PreAuthModal from './PreAuthModal'
 
 export default function Navbar() {
   const { lang, setLang, t } = useLang()
@@ -16,6 +17,7 @@ export default function Navbar() {
   const { items } = useCart()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  const [preAuthOpen, setPreAuthOpen] = useState(false)
 
   const navLinks = [
     { href: '/', label: t.home },
@@ -77,7 +79,9 @@ export default function Navbar() {
 
             {/* Cart */}
             <button
-              onClick={() => setCartOpen(true)}
+              onClick={() => {
+                if (!user) { setPreAuthOpen(true) } else { setCartOpen(true) }
+              }}
               className="relative p-2 rounded-xl hover:bg-gray-50 transition-colors"
               aria-label="Cart"
             >
@@ -163,6 +167,7 @@ export default function Navbar() {
       </header>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <PreAuthModal open={preAuthOpen} onClose={() => setPreAuthOpen(false)} />
     </>
   )
 }

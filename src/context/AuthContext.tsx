@@ -73,6 +73,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(session.user)
           // Token is right here — no second getSession() call needed
           loadProfile(session.access_token, setProfile)
+          // On fresh sign-in, flush any pre-auth contact data collected before login
+          if (_event === 'SIGNED_IN') {
+            try {
+              const raw = sessionStorage.getItem('pp_pending_contact')
+              if (raw) {
+                const contact = JSON.parse(raw)
+                fetch('/api/profile/contact', {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${session.access_token}`,
+                  },
+                  body: JSON.stringify(contact),
+                }).finally(() => sessionStorage.removeItem('pp_pending_contact'))
+              }
+            } catch { /* sessionStorage unavailable (SSR) or malformed JSON */ }
+          }
         } else {
           setUser(null)
           setProfile(null)
