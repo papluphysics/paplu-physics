@@ -336,9 +336,111 @@ export default function HomeClient() {
 
   return (
     <>
+      {/* ══════════════════════════════════════════════════════ BROWSE BY SUBJECT
+           First section after the ad banner — visible on first paint on mobile.
+           Top padding trimmed to keep the heading within the initial viewport.  */}
+      <section className="bg-slate-50/50 pt-6 pb-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-80px' }} variants={stagger}>
+            <motion.div variants={fadeUp} className="text-center mb-12">
+              <span className="inline-block px-4 py-1.5 bg-brand-50 text-brand-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3">
+                {gu ? 'વિષય પ્રમાણે' : 'Browse by Subject'}
+              </span>
+              <h2 className={`text-3xl font-display font-bold text-gray-900 tracking-tight ${gu ? 'font-gujarati' : ''}`}>
+                {gu ? 'તમારો વિષય પસંદ કરો' : 'Choose Your Subject'}
+              </h2>
+              <p className="text-gray-500 mt-2 text-sm">
+                {gu ? 'ગુજરાત બોર્ડ & સ્પર્ધાત્મક પ્રવેશ પરીક્ષાઓ' : 'Gujarat Board & competitive entrance exams'}
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                { icon: '📐', label: gu ? 'ગણિત' : 'Mathematics',        href: '/papers?subject=math&class=12',    from: 'from-blue-50',    to: 'to-blue-100/50',    border: 'border-blue-100',    text: 'text-blue-700',    badge: 'Class 12'    },
+                { icon: '⚛️', label: gu ? 'ભૌતિક વિજ્ઞાન' : 'Physics',  href: '/papers?subject=physics&class=12', from: 'from-purple-50',  to: 'to-purple-100/50',  border: 'border-purple-100',  text: 'text-purple-700',  badge: 'Class 12'    },
+                { icon: '📋', label: gu ? 'ધોરણ ૧૦' : 'Class 10',        href: '/papers?class=10',                 from: 'from-emerald-50', to: 'to-emerald-100/50', border: 'border-emerald-100', text: 'text-emerald-700', badge: 'All Subjects' },
+                { icon: '🎯', label: gu ? 'JEE' : 'JEE Prep',            href: '/papers?cat=jee',                  from: 'from-amber-50',   to: 'to-amber-100/50',   border: 'border-amber-100',   text: 'text-amber-700',   badge: 'Entrance'    },
+                { icon: '🩺', label: gu ? 'NEET' : 'NEET Prep',          href: '/papers?cat=neet',                 from: 'from-rose-50',    to: 'to-rose-100/50',    border: 'border-rose-100',    text: 'text-rose-700',    badge: 'Medical'     },
+                { icon: '🏛️', label: gu ? 'GUJCET' : 'GUJCET',          href: '/papers?cat=gujcet',               from: 'from-cyan-50',    to: 'to-cyan-100/50',    border: 'border-cyan-100',    text: 'text-cyan-700',    badge: 'Gujarat'     },
+                { icon: '🏆', label: gu ? '૯૦%+ સ્કોર' : 'Above 90%',   href: '/papers?cat=90',                   from: 'from-indigo-50',  to: 'to-indigo-100/50',  border: 'border-indigo-100',  text: 'text-indigo-700',  badge: 'Top Score'   },
+                { icon: '✅', label: gu ? 'પાસ પૅકેજ' : 'Pass Package',  href: '/papers?cat=pass',                 from: 'from-teal-50',    to: 'to-teal-100/50',    border: 'border-teal-100',    text: 'text-teal-700',    badge: 'Guaranteed'  },
+              ].map(s => (
+                <motion.div key={s.label} variants={fadeUp}>
+                  <Link
+                    href={s.href}
+                    className={`group flex flex-col items-center gap-3 p-5 rounded-2xl border ${s.border} bg-gradient-to-b ${s.from} ${s.to} hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}
+                  >
+                    <span className="text-4xl group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">{s.icon}</span>
+                    <div className="text-center">
+                      <div className={`text-sm font-bold ${s.text} ${gu ? 'font-gujarati' : ''}`}>{s.label}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{s.badge}</div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════ DEMO PAPER CARD */}
+      <section className="bg-white py-4 px-4">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Link
+              href="/demo"
+              className="group flex flex-col sm:flex-row items-center gap-5 sm:gap-7 w-full p-6 sm:p-8 rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 via-orange-50/40 to-white hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+              style={{ boxShadow: '0 2px 12px rgba(245,158,11,0.10)' }}
+            >
+              {/* Icon */}
+              <div className="shrink-0 flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white border border-amber-100 shadow-sm group-hover:shadow-md transition-shadow duration-300">
+                <svg viewBox="0 0 64 64" fill="none" className="w-12 h-12 sm:w-14 sm:h-14" aria-hidden="true">
+                  {/* Document body */}
+                  <rect x="8" y="4" width="36" height="46" rx="5" fill="#FEF3C7" stroke="#F59E0B" strokeWidth="2.5"/>
+                  {/* Document lines */}
+                  <line x1="16" y1="18" x2="36" y2="18" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+                  <line x1="16" y1="25" x2="36" y2="25" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+                  <line x1="16" y1="32" x2="28" y2="32" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+                  {/* Play circle overlay */}
+                  <circle cx="46" cy="46" r="14" fill="#F59E0B"/>
+                  {/* Play triangle */}
+                  <path d="M42 41 L53 46 L42 51 Z" fill="white"/>
+                </svg>
+              </div>
+
+              {/* Text */}
+              <div className="flex-1 text-center sm:text-left">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-700 text-[11px] font-bold uppercase tracking-widest rounded-full mb-2">
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
+                  {gu ? 'ફ્રી' : 'Free'}
+                </div>
+                <h2 className={`text-xl sm:text-2xl font-display font-bold text-gray-900 mb-1.5 ${gu ? 'font-gujarati' : ''}`}>
+                  {t.demoPaperCardTitle}
+                </h2>
+                <p className={`text-sm text-gray-500 ${gu ? 'font-gujarati' : ''}`}>
+                  {t.demoPaperCardSub}
+                </p>
+              </div>
+
+              {/* CTA */}
+              <div className="shrink-0">
+                <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 group-hover:bg-amber-400 text-white font-bold text-sm rounded-xl transition-colors duration-200 min-h-[44px]">
+                  <span className={gu ? 'font-gujarati' : ''}>{t.demoPaperCardCta}</span>
+                  <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+                </span>
+              </div>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ══════════════════════════════════════ CHOOSE YOUR CLASS
-           Moved above the hero so returning mobile students reach their
-           class immediately without scrolling past the full hero copy.     */}
+           Sits below Choose Your Subject + Demo card.                        */}
       <section className="py-14 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
@@ -464,51 +566,6 @@ export default function HomeClient() {
               <HeroPaperVisual />
             </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* ═════════════════════════════════════════ BROWSE BY SUBJECT */}
-      <section className="bg-slate-50/50 py-20">
-        <div className="max-w-6xl mx-auto px-4">
-          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-80px' }} variants={stagger}>
-            <motion.div variants={fadeUp} className="text-center mb-12">
-              <span className="inline-block px-4 py-1.5 bg-brand-50 text-brand-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3">
-                {gu ? 'વિષય પ્રમાણે' : 'Browse by Subject'}
-              </span>
-              <h2 className={`text-3xl font-display font-bold text-gray-900 tracking-tight ${gu ? 'font-gujarati' : ''}`}>
-                {gu ? 'તમારો વિષય પસંદ કરો' : 'Choose Your Subject'}
-              </h2>
-              <p className="text-gray-500 mt-2 text-sm">
-                {gu ? 'ગુજરાત બોર્ડ & સ્પર્ધાત્મક પ્રવેશ પરીક્ષાઓ' : 'Gujarat Board & competitive entrance exams'}
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {[
-                { icon: '📐', label: gu ? 'ગણિત' : 'Mathematics',        href: '/papers?subject=math&class=12',    from: 'from-blue-50',    to: 'to-blue-100/50',    border: 'border-blue-100',    text: 'text-blue-700',    badge: 'Class 12'    },
-                { icon: '⚛️', label: gu ? 'ભૌતિક વિજ્ઞાન' : 'Physics',  href: '/papers?subject=physics&class=12', from: 'from-purple-50',  to: 'to-purple-100/50',  border: 'border-purple-100',  text: 'text-purple-700',  badge: 'Class 12'    },
-                { icon: '📋', label: gu ? 'ધોરણ ૧૦' : 'Class 10',        href: '/papers?class=10',                 from: 'from-emerald-50', to: 'to-emerald-100/50', border: 'border-emerald-100', text: 'text-emerald-700', badge: 'All Subjects' },
-                { icon: '🎯', label: gu ? 'JEE' : 'JEE Prep',            href: '/papers?cat=jee',                  from: 'from-amber-50',   to: 'to-amber-100/50',   border: 'border-amber-100',   text: 'text-amber-700',   badge: 'Entrance'    },
-                { icon: '🩺', label: gu ? 'NEET' : 'NEET Prep',          href: '/papers?cat=neet',                 from: 'from-rose-50',    to: 'to-rose-100/50',    border: 'border-rose-100',    text: 'text-rose-700',    badge: 'Medical'     },
-                { icon: '🏛️', label: gu ? 'GUJCET' : 'GUJCET',          href: '/papers?cat=gujcet',               from: 'from-cyan-50',    to: 'to-cyan-100/50',    border: 'border-cyan-100',    text: 'text-cyan-700',    badge: 'Gujarat'     },
-                { icon: '🏆', label: gu ? '૯૦%+ સ્કોર' : 'Above 90%',   href: '/papers?cat=90',                   from: 'from-indigo-50',  to: 'to-indigo-100/50',  border: 'border-indigo-100',  text: 'text-indigo-700',  badge: 'Top Score'   },
-                { icon: '✅', label: gu ? 'પાસ પૅકેજ' : 'Pass Package',  href: '/papers?cat=pass',                 from: 'from-teal-50',    to: 'to-teal-100/50',    border: 'border-teal-100',    text: 'text-teal-700',    badge: 'Guaranteed'  },
-              ].map(s => (
-                <motion.div key={s.label} variants={fadeUp}>
-                  <Link
-                    href={s.href}
-                    className={`group flex flex-col items-center gap-3 p-5 rounded-2xl border ${s.border} bg-gradient-to-b ${s.from} ${s.to} hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}
-                  >
-                    <span className="text-4xl group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">{s.icon}</span>
-                    <div className="text-center">
-                      <div className={`text-sm font-bold ${s.text} ${gu ? 'font-gujarati' : ''}`}>{s.label}</div>
-                      <div className="text-xs text-gray-400 mt-0.5">{s.badge}</div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
         </div>
       </section>
 

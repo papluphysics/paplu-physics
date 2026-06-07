@@ -107,6 +107,10 @@ const translations = {
     class12PhysCardDesc: 'Board · JEE · NEET · GUJCET',
     gujcetCardTitle: 'GUJCET Prep',
     gujcetCardDesc: 'Maths & Physics for GUJCET entrance',
+    // Demo Paper card (home page only — appended, no existing keys changed)
+    demoPaperCardTitle: 'Try Free Demo Papers',
+    demoPaperCardSub: 'Sample papers to try before you buy.',
+    demoPaperCardCta: 'Try Free Demo',
   },
   gu: {
     // Nav
@@ -211,6 +215,10 @@ const translations = {
     class12PhysCardDesc: 'બોર્ડ · JEE · NEET · GUJCET',
     gujcetCardTitle: 'GUJCET પ્રવેશ',
     gujcetCardDesc: 'GUJCET માટે ગણિત & ભૌતિક',
+    // Demo Paper card (home page only — appended, no existing keys changed)
+    demoPaperCardTitle: 'ફ્રી ડૅમો પ્રશ્નપત્ર અજમાવો',
+    demoPaperCardSub: 'ખરીદી પહેલા ગુણવત્તા ચકાસો.',
+    demoPaperCardCta: 'ફ્રી ડૅમો',
   }
 }
 
