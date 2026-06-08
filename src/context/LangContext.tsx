@@ -111,6 +111,33 @@ const translations = {
     demoPaperCardTitle: 'Try Free Demo Papers',
     demoPaperCardSub: 'Sample papers to try before you buy.',
     demoPaperCardCta: 'Try Free Demo',
+    // /papers and /demo category landing pages
+    papersLandingTitle: 'Browse Papers',
+    papersLandingSub: 'Choose your class or exam to explore paper sets',
+    demoLandingTitle: 'Free Demo Papers',
+    demoLandingSub: 'Try before you buy — sample papers, completely free',
+    categoryBackLink: 'Back to all categories',
+    categoryPaperSets: 'paper sets',
+    noPapersInCategory: 'No papers in this category yet',
+    noCategories: 'No papers available yet — check back soon',
+    comboSaveBanner: 'Save ₹15 — add any 3 sets to cart',
+    // EarnWithPapluSection
+    earnTitle: 'Earn ₹ with Paplu Physics',
+    earnSub: 'Share your referral link and earn 20% commission on every purchase made through it',
+    earnStep1Title: 'Sign Up Free',
+    earnStep1Desc: 'Create your free account in seconds — no charges',
+    earnStep2Title: 'Get Your Link',
+    earnStep2Desc: 'Copy your unique referral link from your Referral page',
+    earnStep3Title: 'Share & Earn',
+    earnStep3Desc: 'Share on WhatsApp, Instagram, or anywhere — earn 20% on each sale',
+    earnStep4Title: 'Withdraw',
+    earnStep4Desc: 'Minimum ₹15 — transfer to any UPI ID instantly',
+    earnVideoTitle: 'See how it works',
+    earnVideoBtn: 'Watch Video',
+    earnCta: 'Start Earning',
+    // Paper card extras
+    markingSchemeLabel: 'Marking Scheme',
+    demoBadge: 'Free Demo',
   },
   gu: {
     // Nav
@@ -219,6 +246,33 @@ const translations = {
     demoPaperCardTitle: 'ફ્રી ડૅમો પ્રશ્નપત્ર અજમાવો',
     demoPaperCardSub: 'ખરીદી પહેલા ગુણવત્તા ચકાસો.',
     demoPaperCardCta: 'ફ્રી ડૅમો',
+    // /papers and /demo category landing pages
+    papersLandingTitle: 'પ્રશ્નપત્ર જુઓ',
+    papersLandingSub: 'પ્રશ્નપત્ર સેટ જોવા ધોરણ અથવા પરીક્ષા પસંદ કરો',
+    demoLandingTitle: 'ફ્રી ડૅમો પ્રશ્નપત્રો',
+    demoLandingSub: 'ખરીદી પહેલા ચકાસો — ડૅમો પ્રશ્નપત્ર સંપૂર્ણ ફ્રી',
+    categoryBackLink: 'બધી કૅટેગરી પર પાછા',
+    categoryPaperSets: 'પ્રશ્નપત્ર સેટ',
+    noPapersInCategory: 'આ કૅટેગરીમાં હજી કોઈ પ્રશ્નપત્ર નથી',
+    noCategories: 'હજી કોઈ પ્રશ્નપત્ર ઉપલબ્ધ નથી — ટૂંક સમયમાં',
+    comboSaveBanner: '₹15 બચાવો — કોઈ પણ ૩ સેટ કાર્ટમાં ઉમેરો',
+    // EarnWithPapluSection
+    earnTitle: 'Paplu Physics સાથે ₹ કમાઓ',
+    earnSub: 'તમારી રેફરલ લિંક શેર કરો — દરેક ખરીદી પર ૨૦% કમિશન',
+    earnStep1Title: 'ફ્રી નોંધણી',
+    earnStep1Desc: 'ચંદ સેકન્ડમાં ફ્રી ખાતું — કોઈ ચાર્જ નહીં',
+    earnStep2Title: 'લિંક મેળવો',
+    earnStep2Desc: 'રેફરલ પૃષ્ઠ પરથી તમારી અનન્ય લિંક કૉપિ કરો',
+    earnStep3Title: 'શેર કરો & કમાઓ',
+    earnStep3Desc: 'WhatsApp, Instagram પર શેર — દરેક ખરીદી પર ૨૦%',
+    earnStep4Title: 'ઉપાડ',
+    earnStep4Desc: 'ન્યૂનતમ ₹15 — UPI ID પર તાત્કાલિક',
+    earnVideoTitle: 'કેવી રીતે કામ કરે છે',
+    earnVideoBtn: 'વીડિઓ જુઓ',
+    earnCta: 'કમાવાનું શરૂ કરો',
+    // Paper card extras
+    markingSchemeLabel: 'ગુણ વિભાજન',
+    demoBadge: 'ફ્રી ડૅમો',
   }
 }
 

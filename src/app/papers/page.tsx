@@ -1,56 +1,59 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
-import { Search, SlidersHorizontal, Zap } from 'lucide-react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { BookOpen, Atom, Cpu, Heart, GraduationCap, Star, FileText, Zap } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import PaperCard from '@/components/PaperCard'
+import EarnWithPapluSection from '@/components/EarnWithPapluSection'
 import { useLang } from '@/context/LangContext'
-import { CATEGORY_META, type Paper, type ClassLevel } from '@/lib/papers'
+import type { Paper } from '@/lib/papers'
 
-const CLASS_TABS: { id: ClassLevel | 'all'; label: string; labelGu: string }[] = [
-  { id: 'all', label: 'All Papers', labelGu: 'બધા' },
-  { id: '10',  label: 'Class 10',   labelGu: 'ધોરણ ૧૦' },
-  { id: '12',  label: 'Class 12',   labelGu: 'ધોરણ ૧૨' },
-]
+// ── Category icon mapping ────────────────────────────────────────────────────
+function CategoryIcon({ label, className }: { label: string; className?: string }) {
+  const l = label.toLowerCase()
+  const cls = className ?? 'w-10 h-10'
+  if (l.includes('10'))    return <BookOpen className={cls} />
+  if (l.includes('12'))    return <Atom className={cls} />
+  if (l.includes('jee'))   return <Cpu className={cls} />
+  if (l.includes('neet'))  return <Heart className={cls} />
+  if (l.includes('gate'))  return <GraduationCap className={cls} />
+  if (l.includes('gujcet')) return <Star className={cls} />
+  return <FileText className={cls} />
+}
 
-const SUBJECT_TABS = [
-  { id: 'all',     label: 'All Subjects', labelGu: 'બધા વિષય' },
-  { id: 'math',    label: 'Mathematics',  labelGu: 'ગણિત' },
-  { id: 'physics', label: 'Physics',      labelGu: 'ભૌતિક' },
-  { id: 'general', label: 'General',      labelGu: 'સામાન્ય' },
-]
+function categoryColor(label: string): string {
+  const l = label.toLowerCase()
+  if (l.includes('10'))    return 'bg-blue-50 border-blue-100 text-blue-500'
+  if (l.includes('12'))    return 'bg-purple-50 border-purple-100 text-purple-500'
+  if (l.includes('jee'))   return 'bg-amber-50 border-amber-100 text-amber-500'
+  if (l.includes('neet'))  return 'bg-rose-50 border-rose-100 text-rose-500'
+  if (l.includes('gate'))  return 'bg-green-50 border-green-100 text-green-500'
+  if (l.includes('gujcet')) return 'bg-cyan-50 border-cyan-100 text-cyan-500'
+  return 'bg-gray-50 border-gray-200 text-gray-500'
+}
 
 export default function PapersPage() {
   const { t, lang } = useLang()
   const gu = lang === 'gu'
-  const [papers, setPapers] = useState<Paper[]>([])
-  const [loading, setLoading] = useState(true)
-  const [classFilter, setClassFilter] = useState<string>('all')
-  const [subjectFilter, setSubjectFilter] = useState<string>('all')
-  const [catFilter, setCatFilter] = useState<string>('all')
-  const [search, setSearch] = useState('')
+  const [papers, setPapers] = useState<Paper[] | null>(null)
 
   useEffect(() => {
     fetch('/api/papers')
       .then(r => r.json())
       .then(d => setPapers(d.data || []))
       .catch(() => setPapers([]))
-      .finally(() => setLoading(false))
   }, [])
 
-  const filtered = useMemo(() => {
-    return papers.filter(p => {
-      if (classFilter !== 'all' && p.classLevel !== classFilter) return false
-      if (subjectFilter !== 'all' && p.subject !== subjectFilter) return false
-      if (catFilter !== 'all' && p.category !== catFilter) return false
-      if (search) {
-        const q = search.toLowerCase()
-        const title = (gu ? p.titleGu : p.title).toLowerCase()
-        if (!title.includes(q)) return false
-      }
-      return true
-    })
-  }, [papers, classFilter, subjectFilter, catFilter, search, gu])
+  // Derive distinct categories from DB data — dynamic, never hardcoded
+  const categories = useMemo(() => {
+    if (!papers) return []
+    const map = new Map<string, number>()
+    for (const p of papers) {
+      map.set(p.classLevel, (map.get(p.classLevel) || 0) + 1)
+    }
+    return [...map.entries()].map(([label, count]) => ({ label, count }))
+  }, [papers])
 
   return (
     <div className="min-h-screen bg-white">
@@ -58,13 +61,13 @@ export default function PapersPage() {
 
       {/* Header */}
       <div className="bg-gradient-to-b from-brand-50 to-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 py-10">
+        <div className="max-w-5xl mx-auto px-4 pt-10 pb-12">
           <p className="section-label">{gu ? 'ડિજિટલ' : 'Digital'}</p>
-          <h1 className={`section-title text-3xl mt-1 mb-2 ${gu ? 'font-gujarati' : ''}`}>
-            {gu ? 'પ્રશ્નપત્ર સેટ' : 'Paper Sets'}
+          <h1 className={`section-title text-2xl md:text-3xl mt-1 mb-2 ${gu ? 'font-gujarati' : ''}`}>
+            {t.papersLandingTitle}
           </h1>
           <p className={`text-sm text-gray-500 mb-6 ${gu ? 'font-gujarati' : ''}`}>
-            {gu ? 'Gujarat Board, JEE, NEET અને GUJCET માટે' : 'For Gujarat Board, JEE, NEET & GUJCET'}
+            {t.papersLandingSub}
           </p>
 
           {/* Combo Banner */}
@@ -85,92 +88,57 @@ export default function PapersPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Search + Filters */}
-        <div className="flex flex-col md:flex-row gap-3 mb-6">
-          <div className="relative flex-1">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder={t.search}
-              className={`w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all ${gu ? 'font-gujarati' : ''}`}
-            />
+      <div className="max-w-5xl mx-auto px-4 py-10">
+        {/* Loading */}
+        {papers === null && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-44 bg-gray-100 rounded-2xl animate-pulse" />
+            ))}
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <SlidersHorizontal size={15} className="text-gray-400" />
-            {Object.entries(CATEGORY_META).map(([key, meta]) => (
-              <button
-                key={key}
-                onClick={() => setCatFilter(catFilter === key ? 'all' : key)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                  catFilter === key ? `${meta.bg} ${meta.color}` : 'border-gray-200 text-gray-500 hover:bg-gray-50'
-                }`}
+        )}
+
+        {/* Empty */}
+        {papers !== null && categories.length === 0 && (
+          <div className="text-center py-20">
+            <div className="text-5xl mb-4">📭</div>
+            <p className={`text-gray-600 font-medium ${gu ? 'font-gujarati' : ''}`}>{t.noCategories}</p>
+          </div>
+        )}
+
+        {/* Category grid */}
+        {categories.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.map((cat, i) => (
+              <motion.div
+                key={cat.label}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.07, duration: 0.4 }}
               >
-                {gu ? meta.labelGu : meta.label}
-              </button>
+                <Link
+                  href={`/papers/${encodeURIComponent(cat.label)}`}
+                  className="group flex flex-col items-center gap-4 p-6 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center"
+                >
+                  <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center ${categoryColor(cat.label)}`}>
+                    <CategoryIcon label={cat.label} className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <p className={`font-display font-bold text-gray-900 text-base leading-tight mb-1 ${gu ? 'font-gujarati' : ''}`}>
+                      {gu && cat.label.match(/^\d+$/) ? `ધોરણ ${cat.label}` : cat.label}
+                    </p>
+                    <p className={`text-xs text-gray-400 ${gu ? 'font-gujarati' : ''}`}>
+                      {cat.count} {gu ? t.categoryPaperSets : 'paper sets'}
+                    </p>
+                  </div>
+                </Link>
+              </motion.div>
             ))}
           </div>
-        </div>
-
-        {/* Class tabs */}
-        <div className="flex gap-2 mb-3 flex-wrap">
-          {CLASS_TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setClassFilter(tab.id)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                classFilter === tab.id
-                  ? 'bg-brand-500 text-white border-brand-500'
-                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-              } ${gu ? 'font-gujarati' : ''}`}
-            >
-              {gu ? tab.labelGu : tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Subject tabs */}
-        <div className="flex gap-2 mb-8 flex-wrap">
-          {SUBJECT_TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setSubjectFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
-                subjectFilter === tab.id
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'border-gray-200 text-gray-500 hover:bg-gray-50'
-              } ${gu ? 'font-gujarati' : ''}`}
-            >
-              {gu ? tab.labelGu : tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Results */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-52 bg-gray-100 rounded-2xl animate-pulse" />
-            ))}
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">
-            <p className="text-4xl mb-3">📭</p>
-            <p className={`text-sm ${gu ? 'font-gujarati' : ''}`}>
-              {gu ? 'કોઈ પ્રશ્નપત્ર મળ્યા નહીં' : 'No papers found'}
-            </p>
-          </div>
-        ) : (
-          <>
-            <p className="text-xs text-gray-400 mb-4">{filtered.length} paper sets found</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filtered.map(p => <PaperCard key={p.id} paper={p} />)}
-            </div>
-          </>
         )}
       </div>
 
+      <EarnWithPapluSection />
       <Footer />
     </div>
   )

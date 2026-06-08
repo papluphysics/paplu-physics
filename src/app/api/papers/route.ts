@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const db = createServerClient()
   const { data, error } = await db
     .from('papers')
-    .select('id, title_en, title_gu, description_en, description_gu, price, paper_count, is_popular, categories(section, subject, class_level)')
+    .select('id, title_en, title_gu, description_en, description_gu, price, paper_count, is_popular, is_demo, marking_scheme, categories(section, subject, class_level)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
 
@@ -23,6 +25,8 @@ export async function GET() {
     paperCount: p.paper_count || 1,
     price: p.price || 25,
     popular: p.is_popular || false,
+    isDemo: p.is_demo || false,
+    markingScheme: p.marking_scheme || null,
   }))
 
   return NextResponse.json({ data: papers })

@@ -1,33 +1,37 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
 
-// Run this SQL in Supabase SQL Editor to enable demo papers:
-// create table if not exists demo_papers (
-//   id uuid primary key default gen_random_uuid(),
-//   title text not null,
-//   title_gu text,
-//   description text,
-//   description_gu text,
-//   subject text not null default 'general',
-//   class_level text not null default '10',
-//   pdf_url text not null,
-//   is_active boolean not null default true,
-//   created_at timestamptz not null default now()
-// );
-
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const supabase = createServerClient()
-    const { data, error } = await supabase
-      .from('demo_papers')
-      .select('id, title, title_gu, description, description_gu, subject, class_level, pdf_url, created_at')
+    const db = createServerClient()
+    const { data, error } = await db
+      .from('papers')
+      .select('id, title_en, title_gu, description_en, description_gu, price, paper_count, is_popular, marking_scheme, categories(section, subject, class_level)')
       .eq('is_active', true)
+      .eq('is_demo', true)
       .order('created_at', { ascending: false })
 
     if (error) return NextResponse.json({ data: [] })
-    return NextResponse.json({ data: data || [] })
+
+    const papers = (data || []).map((p: any) => ({
+      id: p.id,
+      title: p.title_en,
+      titleGu: p.title_gu || p.title_en,
+      description: p.description_en || '',
+      descriptionGu: p.description_gu || p.description_en || '',
+      category: p.categories?.section || 'board',
+      subject: p.categories?.subject || 'general',
+      classLevel: p.categories?.class_level || '10',
+      paperCount: p.paper_count || 1,
+      price: p.price || 25,
+      popular: p.is_popular || false,
+      isDemo: true,
+      markingScheme: p.marking_scheme || null,
+    }))
+
+    return NextResponse.json({ data: papers })
   } catch {
     return NextResponse.json({ data: [] })
   }

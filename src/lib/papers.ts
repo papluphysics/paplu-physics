@@ -1,6 +1,7 @@
-export type Category = 'pass' | '75' | '90' | 'jee' | 'neet' | 'gujcet' | 'board'
-export type Subject = 'math' | 'physics' | 'general'
-export type ClassLevel = '10' | '12'
+// Free-text: admin can type any value; legacy enum values kept for PAPERS[]
+export type Category = string
+export type Subject = string
+export type ClassLevel = string
 
 export interface Paper {
   id: string
@@ -14,6 +15,8 @@ export interface Paper {
   paperCount: number
   price: number
   popular?: boolean
+  isDemo?: boolean
+  markingScheme?: string
 }
 
 export const PAPERS: Paper[] = [
@@ -193,7 +196,9 @@ export const PAPERS: Paper[] = [
   },
 ]
 
-export const CATEGORY_META: Record<Category, { label: string; labelGu: string; color: string; bg: string }> = {
+type CategoryMetaEntry = { label: string; labelGu: string; color: string; bg: string }
+
+const CATEGORY_META_MAP: Record<string, CategoryMetaEntry> = {
   pass:   { label: 'To Get Pass',  labelGu: 'પાસ થવા',       color: 'text-green-700',   bg: 'bg-green-50 border-green-200' },
   '75':   { label: 'Above 75%',   labelGu: '૭૫% થી વધુ',    color: 'text-amber-700',   bg: 'bg-amber-50 border-amber-200' },
   '90':   { label: 'Above 90%',   labelGu: '૯૦% થી વધુ',    color: 'text-blue-700',    bg: 'bg-blue-50 border-blue-200' },
@@ -202,6 +207,19 @@ export const CATEGORY_META: Record<Category, { label: string; labelGu: string; c
   gujcet: { label: 'GUJCET',      labelGu: 'GUJCET',         color: 'text-cyan-700',    bg: 'bg-cyan-50 border-cyan-200' },
   board:  { label: 'Board',       labelGu: 'બોર્ડ',          color: 'text-slate-700',   bg: 'bg-slate-50 border-slate-200' },
 }
+
+// Safe accessor — returns a sensible default for any free-text category value
+export function getCategoryMeta(category: string): CategoryMetaEntry {
+  return CATEGORY_META_MAP[category] ?? {
+    label: category,
+    labelGu: category,
+    color: 'text-gray-700',
+    bg: 'bg-gray-50 border-gray-200',
+  }
+}
+
+// Keep the export name for any existing import sites
+export const CATEGORY_META = CATEGORY_META_MAP
 
 export const COMBO_PRICE = 60
 export const SINGLE_PRICE = 25
