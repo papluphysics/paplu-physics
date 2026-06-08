@@ -34,7 +34,6 @@ export default function EarnWithPapluSection() {
   }, [])
 
   const ytId = videoUrl ? youtubeId(videoUrl) : null
-  const isYoutube = !!ytId
 
   return (
     <section className="bg-gradient-to-b from-gray-50 to-white border-t border-gray-100 py-14 px-4">
@@ -88,38 +87,56 @@ export default function EarnWithPapluSection() {
             })}
           </div>
 
-          {/* Video block — only shown when admin has set a URL */}
+          {/* Video block — clickable thumbnail card, only shown when admin has set a URL */}
           {videoUrl && (
-            <div className="mb-10 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white">
-              <div className="px-5 py-4 border-b border-gray-50 flex items-center gap-2">
-                <PlayCircle size={16} className="text-brand-500" />
-                <span className={`text-sm font-semibold text-gray-800 ${gu ? 'font-gujarati' : ''}`}>
-                  {t.earnVideoTitle}
-                </span>
-              </div>
-              {isYoutube ? (
-                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                  <iframe
-                    src={`https://www.youtube.com/embed/${ytId}`}
-                    className="absolute inset-0 w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title={t.earnVideoTitle}
+            <div className="mb-10">
+              <p className={`text-center text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 ${gu ? 'font-gujarati' : ''}`}>
+                {t.earnVideoTitle}
+              </p>
+              {ytId ? (
+                <a
+                  href={videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative block rounded-2xl overflow-hidden shadow-md border border-gray-100 hover:shadow-xl transition-shadow max-w-2xl mx-auto"
+                >
+                  {/* YouTube thumbnail */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
+                    alt={t.earnVideoTitle}
+                    className="w-full object-cover"
+                    style={{ aspectRatio: '16/9' }}
                   />
-                </div>
+                  {/* Dark overlay + play button */}
+                  <div className="absolute inset-0 bg-black/25 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                    <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                      <svg viewBox="0 0 24 24" fill="white" className="w-7 h-7 ml-1">
+                        <polygon points="5 3 19 12 5 21" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full">
+                    <ExternalLink size={10} />
+                    <span>YouTube</span>
+                  </div>
+                </a>
               ) : (
-                <div className="p-6 flex flex-col items-center gap-3 bg-gray-50">
-                  <PlayCircle size={40} className="text-brand-400" />
-                  <a
-                    href={videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 text-white font-semibold text-sm hover:bg-brand-600 transition-colors"
-                  >
-                    <span className={gu ? 'font-gujarati' : ''}>{t.earnVideoBtn}</span>
-                    <ExternalLink size={14} />
-                  </a>
-                </div>
+                <a
+                  href={videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-4 p-5 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md hover:border-brand-200 transition-all max-w-2xl mx-auto"
+                >
+                  <div className="w-14 h-14 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
+                    <PlayCircle size={28} className="text-brand-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`font-semibold text-gray-900 text-sm ${gu ? 'font-gujarati' : ''}`}>{t.earnVideoBtn}</p>
+                    <p className="text-xs text-gray-400 mt-0.5 truncate">{videoUrl}</p>
+                  </div>
+                  <ExternalLink size={16} className="text-gray-300 group-hover:text-brand-400 transition-colors shrink-0" />
+                </a>
               )}
             </div>
           )}
